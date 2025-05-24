@@ -1,0 +1,29 @@
+﻿.form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); /* Responsive grid */
+    gap: var(--spacing-m) var(--spacing-l); /* Row and column gap */
+}
+
+.form-group {
+    margin-bottom: 0; /* Remove default margin as grid gap handles spacing */
+}
+
+.card-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--spacing-s);
+    padding-top: var(--spacing-m);
+    margin-top: var(--spacing-m);
+    border-top: 1px solid var(--color-border);
+}
+
+hr {
+    margin-top: var(--spacing-l);
+    margin-bottom: var(--spacing-l);
+    border: 0;
+    border-top: 1px solid var(--color-border);
+}
+
+h4 {
+    margin-bottom: var(--spacing-m);
+}

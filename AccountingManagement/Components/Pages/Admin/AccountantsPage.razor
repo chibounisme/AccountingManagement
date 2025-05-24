@@ -1,0 +1,118 @@
+@page "/admin/accountants"
+@attribute [Authorize(Roles = "Admin")]
+@inject UserService UserSvc
+@inject NavigationManager NavManager
+@inject IStringLocalizer<AppStrings> Localizer
+@inject IJSRuntime JSRuntime
+
+<PageTitle>@Localizer["AccountantsPageTitle"]</PageTitle>
+
+<div class="page-header">
+    <h1>@Localizer["AccountantsPageTitle"]</h1>
+    <button class="btn btn-primary" @onclick="AddNewAccountant">@Localizer["Add"] @Localizer["MenuAccountants", true]</button>
+</div>
+
+@if (isLoading)
+{
+    <p><em>@Localizer["Loading"]</em></p>
+}
+else if (users == null || !users.Any())
+{
+    <p>@Localizer["NoAccountantsFound"]</p> <!-- Add to RESX -->
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>@Localizer["UserFullName"]</th>
+                <th>@Localizer["UsernameLabel"]</th>
+                <th>@Localizer["UserEmail"]</th>
+                <th>@Localizer["UserRole"]</th>
+                <th>@Localizer["UserIsActive"]</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var user in users)
+            {
+                <tr>
+                    <td>@user.FullName</td>
+                    <td>@user.Username</td>
+                    <td>@user.Email</td>
+                    <td>@Localizer[$"UserRole{user.Role}"]</td>
+                    <td>
+                        <span class="@(user.IsActive ? "status-active" : "status-inactive")">
+                            @(user.IsActive ? Localizer["ActiveStatus"] : Localizer["InactiveStatus"])
+                        </span>  <!-- Add ActiveStatus/InactiveStatus to RESX, style .status-* -->
+                    </td>
+                    <td class="table-actions">
+                        <button class="btn btn-sm btn-secondary" @onclick="() => EditAccountant(user.Id)">@Localizer["Edit"]</button>
+                        <button class="btn btn-sm @(user.IsActive ? "btn-warning" : "btn-success")" @onclick="() => ToggleAccountantStatus(user)">
+                            @(user.IsActive ? Localizer["DisableAction"] : Localizer["EnableAction"])
+                        </button> <!-- Add DisableAction/EnableAction to RESX -->
+                         @if (user.Username != "admin") { // Prevent deleting the main admin
+                            <button class="btn btn-sm btn-danger" @onclick="() => ConfirmDeleteAccountant(user)">@Localizer["Delete"]</button>
+                         }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private List<Models.User>? users;
+    private bool isLoading = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadUsers();
+    }
+
+    private async Task LoadUsers()
+    {
+        isLoading = true;
+        // For now, loads all users. Could be filtered by role if non-accountants are added for other reasons.
+        users = (await UserSvc.GetUsersAsync()).OrderBy(u => u.FullName).ToList(); 
+        isLoading = false;
+        StateHasChanged();
+    }
+
+    private void AddNewAccountant()
+    {
+        NavManager.NavigateTo("/admin/accountants/add");
+    }
+
+    private void EditAccountant(int userId)
+    {
+        NavManager.NavigateTo($"/admin/accountants/edit/{userId}");
+    }
+
+    private async Task ToggleAccountantStatus(Models.User user)
+    {
+        string action = user.IsActive ? Localizer["DisableActionConfirm", user.FullName]! : Localizer["EnableActionConfirm", user.FullName]!;
+                                                                                             // Add to RESX with placeholder
+        var confirmed = await JSRuntime.InvokeAsync<bool>("confirm", action);
+        if (confirmed)
+        {
+            await UserSvc.UpdateUserStatusAsync(user.Id, !user.IsActive);
+            await LoadUsers();
+        }
+    }
+    
+    private async Task ConfirmDeleteAccountant(Models.User user)
+    {
+        if (user.Username == "admin") { // Extra safety
+             await JSRuntime.InvokeVoidAsync("alert", Localizer["CannotDeleteAdmin"]); // Add to RESX
+             return;
+        }
+        var confirmed = await JSRuntime.InvokeAsync<bool>("confirm", $"{Localizer["ConfirmDelete"]} {user.FullName} ({user.Username})?");
+        if (confirmed)
+        {
+            await UserSvc.DeleteUserAsync(user.Id);
+            // TODO: Handle companies assigned to this accountant. Reassign or warn.
+            await LoadUsers();
+        }
+    }
+}

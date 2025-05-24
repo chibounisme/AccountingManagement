@@ -6,11 +6,29 @@
     <Application.Resources>
         <ResourceDictionary>
 
-        <!--
-            For information about styling .NET MAUI pages
-            please refer to the documentation:
-            https://go.microsoft.com/fwlink/?linkid=2282329
-        -->
+            <Color x:Key="Primary">#0078D4</Color>
+            <Color x:Key="Secondary">#EFF6FC</Color>
+            <Color x:Key="LightText">#FFFFFF</Color>
+            <Color x:Key="DarkText">#201F1E</Color>
+
+            <!-- Corrected Style for Window -->
+            <Style TargetType="Window">
+                <Setter Property="Title" Value="Gestion Comptable" />
+            </Style>
+
+            <!-- You can still define other global styles here, for example for Page or specific controls -->
+            <!-- 
+            Example:
+            <Style TargetType="ContentPage">
+                <Setter Property="BackgroundColor" Value="{StaticResource Secondary}" />
+            </Style>
+            <Style TargetType="Button">
+                <Setter Property="BackgroundColor" Value="{StaticResource Primary}" />
+                <Setter Property="TextColor" Value="{StaticResource LightText}" />
+                <Setter Property="CornerRadius" Value="5" />
+                <Setter Property="Padding" Value="10,5"/>
+            </Style>
+            -->
 
         </ResourceDictionary>
     </Application.Resources>

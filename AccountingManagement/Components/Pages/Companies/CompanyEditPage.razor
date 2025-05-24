@@ -1,0 +1,238 @@
+@page "/companies/add"
+@page "/companies/edit/{CompanyId:int}"
+@attribute [Authorize(Roles = "Admin, Accountant")]
+
+@inject CompanyService CompanySvc
+@inject UserService UserSvc
+@inject NavigationManager NavManager
+@inject IStringLocalizer<AppStrings> Localizer
+@inject AuthenticationStateProvider AuthStateProvider
+
+
+@if (isLoading)
+{
+    <p><em>@Localizer["Loading"]</em></p>
+}
+else
+{
+    <div class="page-header">
+        <h1>@(IsNewCompany? Localizer["AddCompanyPageTitle"] : Localizer["EditCompanyPageTitle"])</h1>
+    </div>
+
+    <EditForm Model="@companyModel" OnValidSubmit="HandleValidSubmit">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+
+        <div class="card">
+            <div class="card-body">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="companyName">@Localizer["CompanyName"]</label>
+                        <InputText id="companyName" class="form-control" @bind-Value="companyModel.Name" />
+                        <ValidationMessage For="@(() => companyModel.Name)" />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="legalName">@Localizer["CompanyLegalName"]</label>
+                        <InputText id="legalName" class="form-control" @bind-Value="companyModel.LegalName" />
+                        <ValidationMessage For="@(() => companyModel.LegalName)" />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="taxId">@Localizer["CompanyTaxId"]</label>
+                        <InputText id="taxId" class="form-control" @bind-Value="companyModel.TaxIdentificationNumber" />
+                        <ValidationMessage For="@(() => companyModel.TaxIdentificationNumber)" />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="tradeRegister">@Localizer["CompanyTradeRegister"]</label>
+                        <InputText id="tradeRegister" class="form-control" @bind-Value="companyModel.TradeRegisterNumber" />
+                        <ValidationMessage For="@(() => companyModel.TradeRegisterNumber)" />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="activityCode">@Localizer["CompanyActivityCode"]</label>
+                        <InputText id="activityCode" class="form-control" @bind-Value="companyModel.ActivityCode" />
+                        <ValidationMessage For="@(() => companyModel.ActivityCode)" />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="legalForm">@Localizer["CompanyLegalForm"]</label>
+                        <InputSelect id="legalForm" class="form-control" @bind-Value="companyModel.LegalForm">
+                            @foreach (var legalForm in Enum.GetValues<LegalForm>())
+                            {
+                                <option value="@legalForm">@Localizer[$"LegalForm_{legalForm}"]</option>
+                            }
+                        </InputSelect>
+                        <ValidationMessage For="@(() => companyModel.LegalForm)" />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="creationDate">@Localizer["CompanyCreationDate"]</label>
+                        <InputDate id="creationDate" class="form-control" @bind-Value="companyModel.CreationDate" />
+                        <ValidationMessage For="@(() => companyModel.CreationDate)" />
+                    </div>
+
+                    @if (currentUserIsAdmin)
+                    {
+                        <div class="form-group">
+                            <label for="accountant">@Localizer["CompanyAccountant"]</label>
+                            <InputSelect id="accountant" class="form-control" @bind-Value="companyModel.AccountantId">
+                                <option value="">@Localizer["SelectAccountant"]</option> <!-- Add to RESX -->
+                                @if (accountants != null)
+                                {
+                                    @foreach (var acc in accountants)
+                                    {
+                                        <option value="@acc.Id">@acc.FullName (@acc.Username)</option>
+                                    }
+                                }
+                            </InputSelect>
+                            <ValidationMessage For="@(() => companyModel.AccountantId)" />
+                        </div>
+                    }
+                </div> <!-- end form-grid -->
+
+                <hr />
+                <h4>@Localizer["CompanyContactInfo"]</h4> <!-- Add to RESX -->
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="address">@Localizer["CompanyAddress"]</label>
+                        <InputText id="address" class="form-control" @bind-Value="companyModel.Address" />
+                        <ValidationMessage For="@(() => companyModel.Address)" />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="city">@Localizer["CompanyCity"]</label>
+                        <InputText id="city" class="form-control" @bind-Value="companyModel.City" />
+                        <ValidationMessage For="@(() => companyModel.City)" />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="postalCode">@Localizer["CompanyPostalCode"]</label>
+                        <InputText id="postalCode" class="form-control" @bind-Value="companyModel.PostalCode" />
+                        <ValidationMessage For="@(() => companyModel.PostalCode)" />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="country">@Localizer["CompanyCountry"]</label>
+                        <InputText id="country" class="form-control" @bind-Value="companyModel.Country" />
+                        <ValidationMessage For="@(() => companyModel.Country)" />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="phone">@Localizer["CompanyPhoneNumber"]</label>
+                        <InputText id="phone" type="tel" class="form-control" @bind-Value="companyModel.PhoneNumber" />
+                        <ValidationMessage For="@(() => companyModel.PhoneNumber)" />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="email">@Localizer["CompanyEmail"]</label>
+                        <InputText id="email" type="email" class="form-control" @bind-Value="companyModel.Email" />
+                        <ValidationMessage For="@(() => companyModel.Email)" />
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer">
+                <button type="submit" class="btn btn-primary" disabled="@isSaving">
+                    @if (isSaving)
+                    {
+                        <span>@Localizer["Saving"]...</span>
+                    }
+                    else
+                    {
+
+                        <span>@Localizer["Save"]</span>
+                    }
+                </button>
+                <button type="button" class="btn btn-secondary" @onclick="Cancel">@Localizer["Cancel"]</button>
+            </div>
+        </div>
+    </EditForm>
+}
+
+
+@code {
+    [Parameter]
+    public int? CompanyId { get; set; }
+
+    private Company companyModel = new Company { CreationDate = DateTime.Today, Country = "Tunisie" };
+    private List<Models.User>? accountants;
+    private Models.User? currentUser;
+
+    private bool IsNewCompany => CompanyId == null;
+    private bool isLoading = true;
+    private bool isSaving = false;
+    private bool currentUserIsAdmin = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+        var userPrincipal = authState.User;
+        if (userPrincipal.Identity != null && userPrincipal.Identity.IsAuthenticated)
+        {
+            var userIdClaim = userPrincipal.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            if (int.TryParse(userIdClaim, out int userId))
+            {
+                currentUser = await UserSvc.GetUserByIdAsync(userId);
+                currentUserIsAdmin = currentUser?.Role == UserRole.Admin;
+            }
+        }
+
+        if (currentUser == null) { NavManager.NavigateTo("/login"); return; }
+
+
+        if (currentUserIsAdmin)
+        {
+            accountants = await UserSvc.GetAccountantsAsync();
+        }
+
+        if (!IsNewCompany && CompanyId.HasValue)
+        {
+            var loadedCompany = await CompanySvc.GetCompanyByIdAsync(CompanyId.Value);
+            if (loadedCompany != null)
+            {
+                // Security check: Accountant can only edit their own companies unless Admin
+                if (!currentUserIsAdmin && loadedCompany.AccountantId != currentUser.Id)
+                {
+                    NavManager.NavigateTo("/companies"); // Or an unauthorized page
+                    return;
+                }
+                companyModel = loadedCompany;
+            }
+            else
+            {
+                // Company not found, navigate away or show error
+                NavManager.NavigateTo("/companies");
+                return;
+            }
+        }
+        else
+        {
+            // New company: if current user is an accountant, pre-assign them.
+            if (currentUser.Role == UserRole.Accountant)
+            {
+                companyModel.AccountantId = currentUser.Id;
+            }
+        }
+        isLoading = false;
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        isSaving = true;
+        if (IsNewCompany && !currentUserIsAdmin && currentUser != null)
+        {
+            // Ensure accountant is assigned if created by an accountant
+            companyModel.AccountantId = currentUser.Id;
+        }
+
+        await CompanySvc.SaveCompanyAsync(companyModel);
+        isSaving = false;
+        NavManager.NavigateTo("/companies");
+    }
+
+    private void Cancel()
+    {
+        NavManager.NavigateTo("/companies");
+    }
+}

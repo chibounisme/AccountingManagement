@@ -1,0 +1,31 @@
+﻿.status-active {
+    color: var(--color-success);
+    font-weight: 600;
+}
+
+.status-inactive {
+    color: var(--color-error);
+    font-weight: 600;
+}
+
+.btn-warning { /* For disable button */
+    background-color: #FFC107;
+    color: var(--color-text-primary);
+    border-color: #FFC107;
+}
+
+    .btn-warning:hover {
+        background-color: #E0A800;
+        border-color: #D39E00;
+    }
+
+.btn-success { /* For enable button */
+    background-color: var(--color-success);
+    color: var(--color-text-on-primary);
+    border-color: var(--color-success);
+}
+
+    .btn-success:hover {
+        background-color: #0E610E;
+        border-color: #0D540D;
+    }

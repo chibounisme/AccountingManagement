@@ -1,29 +1,40 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
+<!-- Set language to French -->
+
 <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-    <title>AccountingManagement</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Gestion Comptable</title>
     <base href="/" />
-    <link rel="stylesheet" href="css/bootstrap/bootstrap.min.css" />
+    <!-- Remove Bootstrap if it exists -->
+    <!-- <link rel="stylesheet" href="css/bootstrap/bootstrap.min.css" /> -->
     <link rel="stylesheet" href="css/app.css" />
-    <link rel="stylesheet" href="AccountingManagement.styles.css" />
-    <link rel="icon" type="image/png" href="favicon.png" />
+    <!-- If you had other CSS like app.css, ensure fluent-ui-inspired.css is also linked or imported -->
+    <!-- AccountingManagement.styles.css is for component-specific scoped CSS -->
+    <link href="AccountingManagement.styles.css" rel="stylesheet" />
+    <link rel="icon" type="image/png" href="favicon.png" /> <!-- Add a favicon -->
 </head>
 
 <body>
 
-    <div class="status-bar-safe-area"></div>
+<div class="status-bar-safe-area"></div>
 
-    <div id="app">Loading...</div>
-
-    <div id="blazor-error-ui">
-        An unhandled error has occurred.
-        <a href="" class="reload">Reload</a>
-        <a class="dismiss">🗙</a>
+<div id="app">
+    <div style="position:absolute; top:30vh; width:100%; text-align:center">
+        <h1>Gestion Comptable</h1>
+        <p>Chargement de l'application...</p>
+        <!-- You can add a simple loading spinner here if desired -->
     </div>
+</div>
 
-    <script src="_framework/blazor.webview.js" autostart="false"></script>
+<div id="blazor-error-ui">
+    Une erreur non gérée s'est produite.
+    <a href="" class="reload">Recharger</a>
+    <a class="dismiss">🗙</a>
+</div>
+
+<script src="_framework/blazor.webview.js" autostart="false"></script>
 
 </body>
 
