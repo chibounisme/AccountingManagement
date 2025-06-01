@@ -1,0 +1,22 @@
+{
+    "name": "accountingmanagement.ui.maui",
+    "version": "1.0.0",
+    "description": "Tailwind CSS for AccountingManagement MAUI App",
+    "main": "index.js",
+    "scripts": {
+        "build:css": "tailwindcss -i ./Styles/app.input.css -o ./wwwroot/css/app.tailwind.css --minify",
+        "watch:css": "tailwindcss -i ./Styles/app.input.css -o ./wwwroot/css/app.tailwind.css --watch"
+    },
+    "keywords": [
+        "maui",
+        "tailwind"
+    ],
+    "author": "",
+    "license": "ISC",
+    "devDependencies": {
+        "@tailwindcss/forms": "^0.5.7",
+        "autoprefixer": "^10.4.19",
+        "postcss": "^8.4.38",
+        "tailwindcss": "^3.4.3"
+    }
+}

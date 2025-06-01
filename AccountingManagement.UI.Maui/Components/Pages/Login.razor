@@ -1,0 +1,97 @@
+@page "/login"
+@using AccountingManagement.UI.Maui.Authentication
+@layout EmptyLayout
+@inject IAuthService AppAuthService
+@inject CustomAuthenticationStateProvider AuthStateProviderService
+@inject NavigationManager NavManager
+@inject IStringLocalizer<AppStrings> Localizer
+
+<div class="w-full max-w-md">
+    <div class="bg-surface shadow-xl rounded-lg p-8">
+        <div class="flex flex-col items-center mb-6">
+            <img src="images/app_logo_placeholder.svg" alt="Logo" class="h-16 w-16 mb-4" />
+            <h1 class="text-2xl font-bold text-text-primary">@Localizer["LoginPageTitle"]</h1>
+        </div>
+        
+        @if (!string.IsNullOrEmpty(errorMessage))
+        {
+            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
+                <span class="block sm:inline">@errorMessage</span>
+            </div>
+        }
+
+        <EditForm Model="@loginModel" OnValidSubmit="HandleLogin">
+            <DataAnnotationsValidator />
+            
+            <div class="mb-4">
+                <label for="username" class="form-label">@Localizer["UsernameLabel"]</label>
+                <InputText id="username" class="form-input" @bind-Value="loginModel.Username" />
+                <ValidationMessage For="@(() => loginModel.Username)" class="validation-message" />
+            </div>
+            
+            <div class="mb-6">
+                <label for="password" class="form-label">@Localizer["PasswordLabel"]</label>
+                <InputText id="password" type="password" class="form-input" @bind-Value="loginModel.Password" />
+                <ValidationMessage For="@(() => loginModel.Password)" class="validation-message" />
+            </div>
+            
+            <button type="submit" class="btn btn-primary w-full" disabled="@isLoggingIn">
+                @if (isLoggingIn)
+                {
+                    <div class="inline-block animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-text-on-primary mr-2"></div>
+                    <span>@Localizer["Loading"]</span>
+                }
+                else
+                {
+                    <span>@Localizer["LoginButton"]</span>
+                }
+            </button>
+        </EditForm>
+    </div>
+</div>
+
+@code {
+    private LoginRequestDto loginModel = new();
+    private string? errorMessage;
+    private bool isLoggingIn = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        System.Diagnostics.Debug.WriteLine($"Current UI Culture: {System.Globalization.CultureInfo.CurrentUICulture.Name}");
+        var authState = await AuthStateProviderService.GetAuthenticationStateAsync();
+        if (authState.User.Identity?.IsAuthenticated == true)
+        {
+            NavManager.NavigateTo("/");
+        }
+    }
+
+    private async Task HandleLogin()
+    {
+        isLoggingIn = true;
+        errorMessage = null;
+        StateHasChanged();
+
+        try
+        {
+            var userDto = await AppAuthService.LoginAsync(loginModel.Username, loginModel.Password);
+            if (userDto != null)
+            {
+                AuthStateProviderService.NotifyUserAuthentication(userDto);
+                NavManager.NavigateTo("/");
+            }
+            else
+            {
+                errorMessage = Localizer["InvalidLoginAttempt"];
+            }
+        }
+        catch (Exception)
+        {
+            errorMessage = Localizer["InvalidLoginAttempt"];
+        }
+        finally
+        {
+            isLoggingIn = false;
+            StateHasChanged();
+        }
+    }
+}

@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Gestion Comptable</title>
+    <base href="/" />
+    <link rel="stylesheet" href="css/app.tailwind.css" />
+    <link rel="icon" type="image/png" href="favicon.png" />
+</head>
+
+<body>
+<div id="app" class="h-full">
+    <div class="flex items-center justify-center h-full">
+        <div class="text-center">
+            <h1 class="text-2xl font-semibold text-gray-700">Gestion Comptable</h1>
+            <p class="text-gray-500">Chargement de l'application...</p>
+            <!-- Simple spinner example (Tailwind) -->
+            <div class="mt-4 animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
+        </div>
+    </div>
+</div>
+
+<div id="blazor-error-ui" class="hidden">
+    <div class="fixed inset-0 z-50 flex items-center justify-center bg-red-100 bg-opacity-90">
+        <div class="p-6 bg-white rounded-lg shadow-xl text-red-700">
+            Une erreur non gérée s'est produite.
+            <a href="" class="ml-4 px-3 py-1 border border-red-500 rounded text-red-600 hover:bg-red-50">Recharger</a>
+            <button class="ml-2 px-3 py-1 border border-gray-400 rounded text-gray-600 hover:bg-gray-100" onclick="document.getElementById('blazor-error-ui').classList.add('hidden')">🗙</button>
+        </div>
+    </div>
+</div>
+
+<script src="_framework/blazor.webview.js" autostart="false"></script>
+</body>
+</html>

@@ -1,0 +1,8 @@
+<div class="flex justify-center items-center p-4">
+    <div class="animate-spin rounded-full h-10 w-10 border-b-2 border-primary"></div>
+    <span class="ml-3 text-text-secondary">@Message</span>
+</div>
+
+@code {
+    [Parameter] public string Message { get; set; } = "Loading...";
+}

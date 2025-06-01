@@ -1,0 +1,124 @@
+@page "/companies"
+@using AccountingManagement.Application.Abstractions
+@attribute [Authorize(Roles = "Admin, Accountant")]
+@inject ICompanyService AppCompanyService
+@inject IUserService AppUserService
+@inject ICurrentUserService CurrentUserService
+@inject NavigationManager NavManager
+@inject IStringLocalizer<AppStrings> Localizer
+@inject IJSRuntime JSRuntime
+
+<PageTitle>@Localizer["CompaniesPageTitle"]</PageTitle>
+
+<div class="page-header">
+    <h1>@Localizer["CompaniesPageTitle"]</h1>
+    <button class="btn btn-primary" @onclick="AddNewCompany">
+        @Localizer["Add"] @Localizer["MenuCompanies"]
+    </button>
+</div>
+
+@if (isLoading)
+{
+    <LoadingIndicator />
+}
+else if (companies == null || !companies.Any())
+{
+    <p class="text-text-secondary">@Localizer["NoCompaniesFound"]</p>
+}
+else
+{
+    <div class="table-wrapper">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>@Localizer["CompanyName"]</th>
+                    <th>@Localizer["CompanyLegalName"]</th>
+                    <th>@Localizer["CompanyTaxId"]</th>
+                    <th>@Localizer["CompanyCity"]</th>
+                    @if (CurrentUserService.UserRole == UserRole.Admin)
+                    {
+                        <th>@Localizer["CompanyAccountant"]</th>
+                    }
+                    <th class="text-right">@Localizer["Actions"]</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var company in companies)
+                {
+                    <tr>
+                        <td class="font-medium text-text-primary">@company.Name</td>
+                        <td>@company.LegalName</td>
+                        <td>@company.TaxIdentificationNumber</td>
+                        <td>@company.City</td>
+                        @if (CurrentUserService.UserRole == UserRole.Admin)
+                        {
+                            <td>@(company.AccountantFullName ?? Localizer["NotAssigned"])</td>
+                        }
+                        <td class="text-right table-actions">
+                            <button class="btn btn-secondary btn-xs" @onclick="() => EditCompany(company.Id)">@Localizer["Edit"]</button>
+                            <button class="btn btn-danger btn-xs" @onclick="() => ConfirmDeleteCompany(company)">@Localizer["Delete"]</button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+
+<ConfirmDialog @ref="confirmDialog" />
+
+@code {
+    private List<CompanyDto>? companies;
+    private bool isLoading = true;
+    private ConfirmDialog? confirmDialog;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadCompanies();
+    }
+
+    private async Task LoadCompanies()
+    {
+        isLoading = true;
+        try
+        {
+            companies = await AppCompanyService.GetCompaniesForCurrentUserAsync();
+            companies = companies.OrderBy(c => c.Name).ToList();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error loading companies: {ex.Message}");
+            companies = new List<CompanyDto>();
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private void AddNewCompany()
+    {
+        NavManager.NavigateTo("/companies/add");
+    }
+
+    private void EditCompany(int companyId)
+    {
+        NavManager.NavigateTo($"/companies/edit/{companyId}");
+    }
+
+    private async Task ConfirmDeleteCompany(CompanyDto company)
+    {
+        if (confirmDialog != null && await confirmDialog.ShowAsync(Localizer["ConfirmDeleteMessage", company.Name]!))
+        {
+            try
+            {
+                await AppCompanyService.DeleteCompanyAsync(company.Id);
+                await LoadCompanies();
+            }
+            catch (Exception ex)
+            {
+                 Console.WriteLine($"Error deleting company: {ex.Message}");
+            }
+        }
+    }
+}

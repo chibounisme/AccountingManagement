@@ -1,0 +1,153 @@
+@page "/admin/accountants"
+@attribute [Authorize(Roles = "Admin")]
+@inject IUserService AppUserService
+@inject NavigationManager NavManager
+@inject IStringLocalizer<AppStrings> Localizer
+@inject IJSRuntime JSRuntime
+
+<PageTitle>@Localizer["AccountantsPageTitle"]</PageTitle>
+
+<div class="page-header">
+    <h1>@Localizer["AccountantsPageTitle"]</h1>
+    <button class="btn btn-primary" @onclick="AddNewAccountant">
+        @Localizer["Add"] @Localizer["MenuAccountants"]
+    </button>
+</div>
+
+@if (isLoading)
+{
+    <LoadingIndicator />
+}
+else if (users == null || !users.Any())
+{
+    <p class="text-text-secondary">@Localizer["NoAccountantsFound"]</p>
+}
+else
+{
+    <div class="table-wrapper">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>@Localizer["UserFullName"]</th>
+                    <th>@Localizer["UsernameLabel"]</th>
+                    <th>@Localizer["UserEmail"]</th>
+                    <th>@Localizer["UserRole"]</th>
+                    <th>@Localizer["UserIsActive"]</th>
+                    <th class="text-right">@Localizer["Actions"]</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var user in users)
+                {
+                    <tr>
+                        <td>@user.FullName</td>
+                        <td>@user.Username</td>
+                        <td>@user.Email</td>
+                        <td>@Localizer[$"UserRole{user.Role}"]</td>
+                        <td>
+                            <span class="@(user.IsActive ? "text-green-600 font-semibold" : "text-red-600 font-semibold")">
+                                @(user.IsActive ? Localizer["Active"] : Localizer["Inactive"])
+                            </span>
+                        </td>
+                        <td class="text-right table-actions">
+                            <button class="btn btn-secondary btn-xs" @onclick="() => EditAccountant(user.Id)">@Localizer["Edit"]</button>
+                            <button class="btn @(user.IsActive ? "btn-warning" : "btn-success") btn-xs" @onclick="() => ToggleAccountantStatus(user)">
+                                @(user.IsActive ? Localizer["Disable"] : Localizer["Enable"])
+                            </button>
+                            @if (user.Username.ToLower() != "admin")
+                            {
+                                <button class="btn btn-danger btn-xs" @onclick="() => ConfirmDeleteAccountant(user)">@Localizer["Delete"]</button>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+
+<ConfirmDialog @ref="confirmDialog" />
+
+@code {
+    private List<UserDto>? users;
+    private bool isLoading = true;
+    private ConfirmDialog? confirmDialog;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadUsers();
+    }
+
+    private async Task LoadUsers()
+    {
+        isLoading = true;
+        try
+        {
+            users = (await AppUserService.GetAllUsersAsync()).OrderBy(u => u.FullName).ToList();
+        }
+        catch (Exception ex)
+        {
+            // Log error, show message to user
+            Console.WriteLine($"Error loading users: {ex.Message}");
+            users = new List<UserDto>(); // Prevent null ref
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private void AddNewAccountant()
+    {
+        NavManager.NavigateTo("/admin/accountants/add");
+    }
+
+    private void EditAccountant(int userId)
+    {
+        NavManager.NavigateTo($"/admin/accountants/edit/{userId}");
+    }
+
+    private async Task ToggleAccountantStatus(UserDto user)
+    {
+        if (user.Username.ToLower() == "admin") return;
+
+        var confirmationMessage = user.IsActive ? Localizer["ConfirmDisableUser", user.FullName] : Localizer["ConfirmEnableUser", user.FullName];
+        
+        if (confirmDialog != null && await confirmDialog.ShowAsync(confirmationMessage!))
+        {
+            try
+            {
+                await AppUserService.UpdateUserStatusAsync(user.Id, !user.IsActive);
+                await LoadUsers();
+            }
+            catch (Exception ex)
+            {
+                // Log error, show message
+                Console.WriteLine($"Error toggling user status: {ex.Message}");
+            }
+        }
+    }
+
+    private async Task ConfirmDeleteAccountant(UserDto user)
+    {
+        if (user.Username.ToLower() == "admin")
+        {
+            await JSRuntime.InvokeVoidAsync("alert", Localizer["CannotDeleteAdminUser"]);
+            return;
+        }
+        
+        if (confirmDialog != null && await confirmDialog.ShowAsync(Localizer["ConfirmDeleteMessage", user.FullName]!))
+        {
+            try
+            {
+                await AppUserService.DeleteUserAsync(user.Id);
+                await LoadUsers();
+            }
+            catch (Exception ex)
+            {
+                 // Log error, show message
+                Console.WriteLine($"Error deleting user: {ex.Message}");
+            }
+        }
+    }
+}

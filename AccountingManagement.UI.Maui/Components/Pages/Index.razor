@@ -1,0 +1,36 @@
+@page "/"
+@using AccountingManagement.Application.Abstractions
+@attribute [Authorize]
+@inject IStringLocalizer<AppStrings> Localizer
+@inject ICurrentUserService CurrentUserService
+@inject NavigationManager NavManager
+
+<PageTitle>@Localizer["DashboardPageTitle"]</PageTitle>
+
+<div class="page-header">
+    <h1>@Localizer["DashboardPageTitle"]</h1>
+</div>
+
+<p class="text-lg mb-6">@Localizer["WelcomeMessage", CurrentUserService.Username ?? "..."]</p>
+
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div class="card">
+        <div class="card-body">
+            <h3 class="text-xl font-semibold text-primary mb-2">@Localizer["MenuCompanies"]</h3>
+            <p class="text-text-secondary mb-4">@Localizer["ManageYourClientCompanies"]</p>
+            <button @onclick='() => NavManager.NavigateTo("/companies")' class="btn btn-secondary">@Localizer["GoToCompanies"]</button>
+        </div>
+    </div>
+
+    <AuthorizeView Roles="Admin">
+        <Authorized>
+            <div class="card">
+                <div class="card-body">
+                    <h3 class="text-xl font-semibold text-primary mb-2">@Localizer["MenuAccountants"]</h3>
+                    <p class="text-text-secondary mb-4">@Localizer["ManageAccountantUsers"]</p>
+                    <button @onclick='() => NavManager.NavigateTo("/admin/accountants")' class="btn btn-secondary">@Localizer["GoToAccountants"]</button>
+                </div>
+            </div>
+        </Authorized>
+    </AuthorizeView>
+</div>

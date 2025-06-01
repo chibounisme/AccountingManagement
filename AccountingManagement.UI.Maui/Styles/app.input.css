@@ -1,0 +1,167 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+
+    html,
+    body,
+    #app {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        font-family: theme('fontFamily.sans');
+        background-color: theme('colors.background');
+        color: theme('colors.text-primary');
+        overflow: hidden;
+        /* Prevent body scroll, manage scroll within specific containers */
+    }
+
+    h1 {
+        @apply text-2xl font-semibold mb-4;
+    }
+
+    h2 {
+        @apply text-xl font-semibold mb-3;
+    }
+
+    h3 {
+        @apply text-lg font-semibold mb-2;
+    }
+
+    a {
+        @apply text-primary hover:text-primary-hover hover:underline;
+    }
+
+    /* Scrollbar styling (optional, good for consistency) */
+    ::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+        background: theme('colors.background');
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background: #A19F9D;
+        /* Fluent-like scrollbar color */
+        border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+        background: theme('colors.text-secondary');
+    }
+}
+
+@layer components {
+    .btn {
+        @apply inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-colors;
+    }
+
+    .btn-primary {
+        @apply text-text-on-primary bg-primary hover:bg-primary-hover disabled:bg-gray-300;
+    }
+
+    .btn-secondary {
+        @apply text-text-primary bg-surface border-border-color hover:bg-gray-50 disabled:bg-gray-100 disabled:text-gray-400;
+    }
+
+    .btn-danger {
+        @apply text-text-on-primary bg-error hover:bg-red-700 disabled:bg-red-300;
+    }
+
+    .btn-sm {
+        @apply px-3 py-1.5 text-xs;
+    }
+
+    .btn-xs {
+        @apply px-2.5 py-1 text-xs;
+    }
+
+    .btn-icon {
+        @apply p-2 rounded-md hover:bg-gray-100 focus:ring-0;
+    }
+
+    .form-input {
+        @apply block w-full shadow-sm sm:text-sm border-border-color rounded-md focus:ring-primary focus:border-primary;
+    }
+
+    .form-select {
+        @apply block w-full pl-3 pr-10 py-2 text-base border-border-color focus:outline-none focus:ring-primary focus:border-primary sm:text-sm rounded-md;
+    }
+
+    .form-checkbox {
+        @apply h-4 w-4 text-primary border-gray-300 rounded focus:ring-primary;
+    }
+
+    .form-label {
+        @apply block text-sm font-medium text-text-secondary mb-1;
+    }
+
+    .validation-message {
+        @apply text-xs text-error mt-1;
+    }
+
+    .card {
+        @apply bg-surface shadow rounded-lg;
+    }
+
+    .card-header {
+        @apply px-4 py-3 border-b border-border-color sm:px-6;
+    }
+
+    .card-body {
+        @apply px-4 py-5 sm:p-6;
+    }
+
+    .card-footer {
+        @apply px-4 py-3 bg-gray-50 text-right sm:px-6 rounded-b-lg;
+    }
+
+    .page-header {
+        @apply flex justify-between items-center pb-4 mb-6 border-b border-border-color;
+    }
+
+    .page-header h1 {
+        @apply text-2xl font-semibold text-text-primary;
+    }
+
+    /* Table styles */
+    .table-wrapper {
+        @apply shadow ring-1 ring-black ring-opacity-5 md:rounded-lg overflow-x-auto;
+    }
+
+    .table {
+        @apply min-w-full divide-y divide-gray-300;
+    }
+
+    .table thead th {
+        @apply px-3 py-3.5 text-left text-sm font-semibold text-text-primary bg-gray-50;
+    }
+
+    .table tbody tr {
+        @apply divide-x divide-gray-200;
+    }
+
+    .table tbody td {
+        @apply whitespace-nowrap px-3 py-4 text-sm text-text-secondary;
+    }
+
+    .table tbody tr:nth-child(even) {
+        @apply bg-white;
+    }
+
+    .table tbody tr:nth-child(odd) {
+        @apply bg-gray-50;
+        /* Subtle striping */
+    }
+
+    .table tbody tr:hover {
+        @apply bg-gray-100;
+    }
+
+    .table-actions {
+        @apply space-x-2;
+    }
+}

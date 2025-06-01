@@ -1,0 +1,22 @@
+@inject NavigationManager NavigationManager
+
+<NavLink href="@Href" Match="Match" class="group flex items-center px-3 py-2 text-sm font-medium rounded-md text-sidebar-text hover:bg-sidebar-item-hover-bg hover:text-sidebar-text"
+         activeClass="bg-sidebar-item-active-bg text-sidebar-item-active-text">
+    @if (!string.IsNullOrEmpty(IconClass))
+    {
+        <span class="mr-3 text-gray-400 group-hover:text-gray-500 group-[.active]:text-primary @IconClass">
+            @* This span can hold an <i> tag for an icon font or an <svg> *@
+            @if (IconClass == "home-icon-placeholder") { @((MarkupString)"🏠") }
+            @if (IconClass == "briefcase-icon-placeholder") { @((MarkupString)"💼") }
+            @if (IconClass == "users-icon-placeholder") { @((MarkupString)"👥") }
+        </span>
+    }
+    @ChildContent
+</NavLink>
+
+@code {
+    [Parameter] public string Href { get; set; } = "";
+    [Parameter] public NavLinkMatch Match { get; set; } = NavLinkMatch.Prefix;
+    [Parameter] public string? IconClass { get; set; }
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+}
