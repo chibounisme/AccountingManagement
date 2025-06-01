@@ -1,6 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <root>
-	<!-- ... (copy all schema and resheader from AppStrings.resx) ... -->
 	<resheader name="resmimetype">
 		<value>text/microsoft-resx</value>
 	</resheader>
@@ -13,8 +12,6 @@
 	<resheader name="writer">
 		<value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
 	</resheader>
-
-	<!-- General -->
 	<data name="ApplicationTitle" xml:space="preserve">
     <value>Gestion Comptable</value>
   </data>
@@ -66,11 +63,6 @@
 	<data name="No" xml:space="preserve">
     <value>Non</value>
   </data>
-	<data name="RequiredField" xml:space="preserve">
-    <value>Ce champ est requis.</value>
-  </data>
-
-	<!-- Navigation -->
 	<data name="MenuHome" xml:space="preserve">
     <value>Accueil</value>
   </data>
@@ -83,8 +75,6 @@
 	<data name="MenuAdministration" xml:space="preserve">
     <value>Administration</value>
   </data>
-
-	<!-- Pages & Titles -->
 	<data name="LoginPageTitle" xml:space="preserve">
     <value>Connexion</value>
   </data>
@@ -109,8 +99,6 @@
 	<data name="EditAccountantPageTitle" xml:space="preserve">
     <value>Modifier le Comptable</value>
   </data>
-
-	<!-- User Model -->
 	<data name="UserFullName" xml:space="preserve">
     <value>Nom Complet</value>
   </data>
@@ -138,8 +126,6 @@
 	<data name="UserUsernameExists" xml:space="preserve">
     <value>Ce nom d'utilisateur existe déjà.</value>
   </data>
-
-	<!-- Company Model -->
 	<data name="CompanyName" xml:space="preserve">
     <value>Raison Sociale (Commerciale)</value>
   </data>
@@ -182,8 +168,6 @@
 	<data name="CompanyAccountant" xml:space="preserve">
     <value>Comptable Attitré</value>
   </data>
-
-	<!-- Legal Forms -->
 	<data name="LegalForm_SUARL" xml:space="preserve">
     <value>SUARL</value>
   </data>
@@ -201,5 +185,98 @@
   </data>
 	<data name="LegalForm_Autre" xml:space="preserve">
     <value>Autre</value>
+  </data>
+  <data name="RequiredField" xml:space="preserve">
+    <value>Ce champ est requis.</value>
+  </data>
+  <data name="NotAuthorizedMessage" xml:space="preserve">
+    <value>Vous n'êtes pas autorisé à accéder à cette ressource.</value>
+  </data>
+  <data name="AuthorizingMessage" xml:space="preserve">
+    <value>Autorisation en cours...</value>
+  </data>
+  <data name="NotFoundTitle" xml:space="preserve">
+    <value>Non trouvé</value>
+  </data>
+  <data name="NotFoundMessage" xml:space="preserve">
+    <value>Désolé, il n'y a rien à cette adresse.</value>
+  </data>
+  <data name="WelcomeMessage" xml:space="preserve">
+    <value>Bienvenue, {0} !</value>
+  </data>
+  <data name="ManageYourClientCompanies" xml:space="preserve">
+    <value>Gérez vos sociétés clientes.</value>
+  </data>
+  <data name="GoToCompanies" xml:space="preserve">
+    <value>Aller aux Sociétés</value>
+  </data>
+  <data name="ManageAccountantUsers" xml:space="preserve">
+    <value>Gérez les utilisateurs comptables.</value>
+  </data>
+  <data name="GoToAccountants" xml:space="preserve">
+    <value>Aller aux Comptables</value>
+  </data>
+  <data name="OptionalLeaveBlank" xml:space="preserve">
+    <value>(Optionnel, laissez vide pour ne pas changer)</value>
+  </data>
+  <data name="PasswordRequiredForNewUser" xml:space="preserve">
+    <value>Le mot de passe est requis pour un nouvel utilisateur.</value>
+  </data>
+  <data name="FieldTooLong" xml:space="preserve">
+    <value>Le champ ne doit pas dépasser {1} caractères.</value>
+  </data>
+  <data name="FieldLengthError" xml:space="preserve">
+    <value>Le champ doit contenir entre {2} et {1} caractères.</value>
+  </data>
+  <data name="InvalidEmail" xml:space="preserve">
+    <value>L'adresse email n'est pas valide.</value>
+  </data>
+  <data name="PasswordLengthError" xml:space="preserve">
+    <value>Le mot de passe doit contenir au moins {2} caractères.</value>
+  </data>
+  <data name="NoAccountantsFound" xml:space="preserve">
+    <value>Aucun comptable trouvé.</value>
+  </data>
+  <data name="ActiveStatus" xml:space="preserve">
+    <value>Actif</value>
+  </data>
+  <data name="InactiveStatus" xml:space="preserve">
+    <value>Inactif</value>
+  </data>
+  <data name="DisableAction" xml:space="preserve">
+    <value>Désactiver</value>
+  </data>
+  <data name="EnableAction" xml:space="preserve">
+    <value>Activer</value>
+  </data>
+  <data name="DisableActionConfirm" xml:space="preserve">
+    <value>Êtes-vous sûr de vouloir désactiver {0} ?</value>
+  </data>
+  <data name="EnableActionConfirm" xml:space="preserve">
+    <value>Êtes-vous sûr de vouloir activer {0} ?</value>
+  </data>
+  <data name="CannotDeleteAdmin" xml:space="preserve">
+    <value>Vous ne pouvez pas supprimer l'administrateur principal.</value>
+  </data>
+  <data name="Saving" xml:space="preserve">
+    <value>Enregistrement</value>
+  </data>
+  <data name="NoCompaniesFound" xml:space="preserve">
+    <value>Aucune société trouvée.</value>
+  </data>
+  <data name="AssignedAccountant" xml:space="preserve">
+    <value>Comptable assigné</value>
+  </data>
+  <data name="NotAssigned" xml:space="preserve">
+    <value>Non assigné</value>
+  </data>
+  <data name="ConfirmDeleteCompany" xml:space="preserve">
+    <value>Êtes-vous sûr de vouloir supprimer la société {0} ?</value>
+  </data>
+  <data name="SelectAccountant" xml:space="preserve">
+    <value>Sélectionner un comptable</value>
+  </data>
+  <data name="CompanyContactInfo" xml:space="preserve">
+    <value>Informations de Contact</value>
   </data>
 </root>

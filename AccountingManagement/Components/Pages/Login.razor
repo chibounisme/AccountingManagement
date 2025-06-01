@@ -88,7 +88,7 @@
 
     protected override void OnInitialized()
     {
-        // If user is already authenticated, redirect them away from login page
+        // If a user is already authenticated, redirect them away from the login page
         var authState = AuthService.CurrentUser; // This might need to come from AuthenticationStateProvider
         if (authState != null) // A simplified check, proper check uses AuthenticationState
         {

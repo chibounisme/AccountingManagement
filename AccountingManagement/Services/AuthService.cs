@@ -50,11 +50,5 @@ namespace AccountingManagement.Services
             _currentUser = null;
             _authStateProvider.NotifyUserLogout();
         }
-
-        public async Task InitializeAuthStateAsync()
-        {
-            // Logic for "remember me" would go here if implemented
-            _authStateProvider.NotifyUserLogout();
-        }
     }
 }

@@ -41,7 +41,7 @@
 </div>
 
 @code {
-    private async Task HandleLogout()
+    private void HandleLogout()
     {
         AuthService.Logout();
         NavManager.NavigateTo("/login", forceLoad: true); // Force load can help reset state

@@ -41,7 +41,6 @@
 	<resheader name="writer">
 		<value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
 	</resheader>
-	<!-- General -->
 	<data name="ApplicationTitle" xml:space="preserve">
     <value>Accounting Management</value>
   </data>
@@ -93,11 +92,6 @@
 	<data name="No" xml:space="preserve">
     <value>No</value>
   </data>
-	<data name="RequiredField" xml:space="preserve">
-    <value>This field is required.</value>
-  </data>
-
-	<!-- Navigation -->
 	<data name="MenuHome" xml:space="preserve">
     <value>Home</value>
   </data>
@@ -110,8 +104,6 @@
 	<data name="MenuAdministration" xml:space="preserve">
     <value>Administration</value>
   </data>
-
-	<!-- Pages & Titles -->
 	<data name="LoginPageTitle" xml:space="preserve">
     <value>Login</value>
   </data>
@@ -136,8 +128,6 @@
 	<data name="EditAccountantPageTitle" xml:space="preserve">
     <value>Edit Accountant</value>
   </data>
-
-	<!-- User Model -->
 	<data name="UserFullName" xml:space="preserve">
     <value>Full Name</value>
   </data>
@@ -165,8 +155,6 @@
 	<data name="UserUsernameExists" xml:space="preserve">
     <value>Username already exists.</value>
   </data>
-
-	<!-- Company Model -->
 	<data name="CompanyName" xml:space="preserve">
     <value>Company Name (Commercial)</value>
   </data>
@@ -209,8 +197,6 @@
 	<data name="CompanyAccountant" xml:space="preserve">
     <value>Managing Accountant</value>
   </data>
-
-	<!-- Legal Forms -->
 	<data name="LegalForm_SUARL" xml:space="preserve">
     <value>SUARL</value>
   </data>
@@ -229,5 +215,97 @@
 	<data name="LegalForm_Autre" xml:space="preserve">
     <value>Other</value>
   </data>
-
+  <data name="RequiredField" xml:space="preserve">
+    <value>This field is required.</value>
+  </data>
+  <data name="NotAuthorizedMessage" xml:space="preserve">
+    <value>You are not authorized to access this resource.</value>
+  </data>
+  <data name="AuthorizingMessage" xml:space="preserve">
+    <value>Authorizing...</value>
+  </data>
+  <data name="NotFoundTitle" xml:space="preserve">
+    <value>Not Found</value>
+  </data>
+  <data name="NotFoundMessage" xml:space="preserve">
+    <value>Sorry, there's nothing at this address.</value>
+  </data>
+  <data name="WelcomeMessage" xml:space="preserve">
+    <value>Welcome, {0}!</value>
+  </data>
+  <data name="ManageYourClientCompanies" xml:space="preserve">
+    <value>Manage your client companies.</value>
+  </data>
+  <data name="GoToCompanies" xml:space="preserve">
+    <value>Go To Companies</value>
+  </data>
+  <data name="ManageAccountantUsers" xml:space="preserve">
+    <value>Manage accountant users.</value>
+  </data>
+  <data name="GoToAccountants" xml:space="preserve">
+    <value>Go To Accountants</value>
+  </data>
+  <data name="OptionalLeaveBlank" xml:space="preserve">
+    <value>(Optional, leave blank to not change)</value>
+  </data>
+  <data name="PasswordRequiredForNewUser" xml:space="preserve">
+    <value>Password is required for a new user.</value>
+  </data>
+  <data name="FieldTooLong" xml:space="preserve">
+    <value>The field must not exceed {1} characters.</value>
+  </data>
+  <data name="FieldLengthError" xml:space="preserve">
+    <value>The field must be between {2} and {1} characters long.</value>
+  </data>
+  <data name="InvalidEmail" xml:space="preserve">
+    <value>The email address is not valid.</value>
+  </data>
+  <data name="PasswordLengthError" xml:space="preserve">
+    <value>The password must be at least {2} characters long.</value>
+  </data>
+  <data name="NoAccountantsFound" xml:space="preserve">
+    <value>No accountants found.</value>
+  </data>
+  <data name="ActiveStatus" xml:space="preserve">
+    <value>Active</value>
+  </data>
+  <data name="InactiveStatus" xml:space="preserve">
+    <value>Inactive</value>
+  </data>
+  <data name="DisableAction" xml:space="preserve">
+    <value>Disable</value>
+  </data>
+  <data name="EnableAction" xml:space="preserve">
+    <value>Enable</value>
+  </data>
+  <data name="DisableActionConfirm" xml:space="preserve">
+    <value>Are you sure you want to disable {0}?</value>
+  </data>
+  <data name="EnableActionConfirm" xml:space="preserve">
+    <value>Are you sure you want to enable {0}?</value>
+  </data>
+  <data name="CannotDeleteAdmin" xml:space="preserve">
+    <value>You cannot delete the main administrator.</value>
+  </data>
+  <data name="Saving" xml:space="preserve">
+    <value>Saving</value>
+  </data>
+  <data name="NoCompaniesFound" xml:space="preserve">
+    <value>No companies found.</value>
+  </data>
+  <data name="AssignedAccountant" xml:space="preserve">
+    <value>Assigned Accountant</value>
+  </data>
+  <data name="NotAssigned" xml:space="preserve">
+    <value>Not assigned</value>
+  </data>
+  <data name="ConfirmDeleteCompany" xml:space="preserve">
+    <value>Are you sure you want to delete the company {0}?</value>
+  </data>
+  <data name="SelectAccountant" xml:space="preserve">
+    <value>Select an accountant</value>
+  </data>
+  <data name="CompanyContactInfo" xml:space="preserve">
+    <value>Contact Information</value>
+  </data>
 </root>
