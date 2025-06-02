@@ -1,4 +1,4 @@
-using System;
+using System.Globalization;
 using AccountingManagement.Application.Abstractions;
 using AccountingManagement.Application.Companies.Services;
 using AccountingManagement.Application.Users.Services;
@@ -11,7 +11,6 @@ using Toolbelt.Blazor.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using System.Globalization;
 
 namespace AccountingManagement.UI.Maui;
 
@@ -43,7 +42,7 @@ public static class MauiProgram
         string inMemoryDatabaseName = "AccountingInMemoryDB_DDD";
         builder.Services.AddDbContext<AppDbContext>(options =>
             options.UseInMemoryDatabase(databaseName: inMemoryDatabaseName)
-                   .EnableSensitiveDataLogging() // Good for dev, remove for prod
+                   .EnableSensitiveDataLogging()
         );
         builder.Services.AddScoped<IAppDbContext>(provider => provider.GetRequiredService<AppDbContext>());
 
@@ -64,39 +63,22 @@ public static class MauiProgram
         builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthenticationStateProvider>();
 
         builder.Services.AddAuthorizationCore();
-
+        
+        builder.Services.AddI18nText();
+        
         var app = builder.Build();
         
-        // Add I18nText service
-        builder.Services.AddI18nText(options =>
+        using var scope = app.Services.CreateScope();
+        var services = scope.ServiceProvider;
+        try
         {
-            // By default, it looks for files in "wwwroot/i18ntext/{TypeSimpleName}.{culture}.json"
-            // If your files are named AppStrings.json, AppStrings.fr.json,
-            // and you inject I18nText<AppStrings>, it should work by convention.
-            // You can customize paths if needed, but defaults are good.
-            options.PersistanceLevel = Toolbelt.Blazor.I18nText.PersistanceLevel.Session; // Or .Cookie for web, .Session is fine for MAUI
-        });
-
-        // Initialize In-Memory Database
-        using (var scope = app.Services.CreateScope())
-        {
-            var services = scope.ServiceProvider;
-            try
-            {
-                var dbContext = services.GetRequiredService<AppDbContext>();
-                dbContext.Database.EnsureCreated(); // Creates schema and seeds data
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"[MauiProgram] In-Memory Database initialization FAILED: {ex.ToString()}");
-                // Handle critical failure
-            }
+            var dbContext = services.GetRequiredService<AppDbContext>();
+            dbContext.Database.EnsureCreated(); 
         }
-
-        // Set default culture
-        var frenchCulture = new CultureInfo("fr-FR");
-        CultureInfo.DefaultThreadCurrentCulture = frenchCulture;
-        CultureInfo.DefaultThreadCurrentUICulture = frenchCulture;
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"[MauiProgram] In-Memory Database initialization FAILED: {ex}");
+        }
 
         return app;
     }

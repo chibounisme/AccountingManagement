@@ -1,7 +1,7 @@
 @using Microsoft.AspNetCore.Components.Routing
 @using Microsoft.AspNetCore.Components.Authorization
 @using AccountingManagement.UI.Maui.Components.Layout 
-@inject I18nText TextService
+@inject Toolbelt.Blazor.I18nText.I18nText I18nTextService
 
 <Router AppAssembly="@typeof(MauiProgram).Assembly">
     <Found Context="routeData">
@@ -14,24 +14,34 @@
                 else
                 {
                     <div class="p-4">
-                        <p role="alert" class="text-red-600">@Localizer["NotAuthorizedMessage", context.User.Identity?.Name ?? ""]</p>
+                        <p role="alert" class="text-red-600">@Strings.NotAuthorizedMessage</p>
                     </div>
                 }
             </NotAuthorized>
             <Authorizing>
                 <div class="p-4">
-                    <p>@Localizer["AuthorizingMessage"]</p>
+                    <p>@Strings.AuthorizingMessage</p>
                 </div>
             </Authorizing>
         </AuthorizeRouteView>
         <FocusOnNavigate RouteData="@routeData" Selector="h1" />
     </Found>
     <NotFound>
-        <PageTitle>@Localizer["NotFoundTitle"]</PageTitle>
+        <PageTitle>@Strings.NotFoundTitle</PageTitle>
         <LayoutView Layout="@typeof(MainLayout)">
             <div class="p-4">
-                <p role="alert" class="text-lg">@Localizer["NotFoundMessage"]</p>
+                <p role="alert" class="text-lg">@Strings.NotFoundMessage</p>
             </div>
         </LayoutView>
     </NotFound>
 </Router>
+
+@code {
+    private AppStrings Strings = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        Strings = await I18nTextService.GetTextTableAsync<AppStrings>(this);
+        await base.OnInitializedAsync();
+    }
+}

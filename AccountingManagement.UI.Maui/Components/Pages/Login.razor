@@ -4,13 +4,13 @@
 @inject IAuthService AppAuthService
 @inject CustomAuthenticationStateProvider AuthStateProviderService
 @inject NavigationManager NavManager
-@inject IStringLocalizer<AppStrings> Localizer
+@inject I18nText I18nTextService
 
 <div class="w-full max-w-md">
     <div class="bg-surface shadow-xl rounded-lg p-8">
         <div class="flex flex-col items-center mb-6">
             <img src="images/app_logo_placeholder.svg" alt="Logo" class="h-16 w-16 mb-4" />
-            <h1 class="text-2xl font-bold text-text-primary">@Localizer["LoginPageTitle"]</h1>
+            <h1 class="text-2xl font-bold text-text-primary">@Strings["blablabla"]</h1>
         </div>
         
         @if (!string.IsNullOrEmpty(errorMessage))
@@ -24,13 +24,13 @@
             <DataAnnotationsValidator />
             
             <div class="mb-4">
-                <label for="username" class="form-label">@Localizer["UsernameLabel"]</label>
+                <label for="username" class="form-label">@Strings.UsernameLabel</label>
                 <InputText id="username" class="form-input" @bind-Value="loginModel.Username" />
                 <ValidationMessage For="@(() => loginModel.Username)" class="validation-message" />
             </div>
             
             <div class="mb-6">
-                <label for="password" class="form-label">@Localizer["PasswordLabel"]</label>
+                <label for="password" class="form-label">@Strings.PasswordLabel</label>
                 <InputText id="password" type="password" class="form-input" @bind-Value="loginModel.Password" />
                 <ValidationMessage For="@(() => loginModel.Password)" class="validation-message" />
             </div>
@@ -39,11 +39,11 @@
                 @if (isLoggingIn)
                 {
                     <div class="inline-block animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-text-on-primary mr-2"></div>
-                    <span>@Localizer["Loading"]</span>
+                    <span>@Strings.Loading</span>
                 }
                 else
                 {
-                    <span>@Localizer["LoginButton"]</span>
+                    <span>@Strings.LoginButton</span>
                 }
             </button>
         </EditForm>
@@ -54,15 +54,19 @@
     private LoginRequestDto loginModel = new();
     private string? errorMessage;
     private bool isLoggingIn = false;
+    private AppStrings Strings = new();
 
     protected override async Task OnInitializedAsync()
     {
+        await I18nTextService.SetCurrentLanguageAsync("en");
+        Strings = await I18nTextService.GetTextTableAsync<AppStrings>(this);
         System.Diagnostics.Debug.WriteLine($"Current UI Culture: {System.Globalization.CultureInfo.CurrentUICulture.Name}");
         var authState = await AuthStateProviderService.GetAuthenticationStateAsync();
         if (authState.User.Identity?.IsAuthenticated == true)
         {
             NavManager.NavigateTo("/");
         }
+        await base.OnInitializedAsync();
     }
 
     private async Task HandleLogin()
@@ -81,12 +85,12 @@
             }
             else
             {
-                errorMessage = Localizer["InvalidLoginAttempt"];
+                errorMessage = Strings.InvalidLoginAttempt;
             }
         }
         catch (Exception)
         {
-            errorMessage = Localizer["InvalidLoginAttempt"];
+            errorMessage = Strings.InvalidLoginAttempt;
         }
         finally
         {

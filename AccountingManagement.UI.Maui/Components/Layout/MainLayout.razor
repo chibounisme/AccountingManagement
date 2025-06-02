@@ -1,11 +1,10 @@
 @using AccountingManagement.Application.Abstractions
 @using AccountingManagement.UI.Maui.Authentication
 @inherits LayoutComponentBase
-@inject IStringLocalizer<AppStrings> Localizer
 @inject NavigationManager NavManager
-@inject IAuthService AppAuthService
 @inject CustomAuthenticationStateProvider AuthStateProviderService
 @inject ICurrentUserService CurrentUserService
+@inject Toolbelt.Blazor.I18nText.I18nText I18nTextService
 
 <div class="flex h-screen bg-background">
     <CascadingAuthenticationState>
@@ -15,7 +14,6 @@
                     var currentUri = NavManager.Uri;
                     if (!currentUri.EndsWith("/login", StringComparison.OrdinalIgnoreCase))
                     {
-                        // Schedule navigation for after the render to avoid issues during component initialization
                         Task.Run(() => NavManager.NavigateTo("/login", replace: true));
                     }
                 }
@@ -27,13 +25,13 @@
                 <div class="w-64 bg-sidebar-bg text-sidebar-text flex flex-col fixed inset-y-0 left-0 z-30 border-r border-border-color">
                     <NavMenu />
                 </div>
-                <main class="flex-1 flex flex-col ml-64"> {/* Adjust margin to match sidebar width */}
+                <main class="flex-1 flex flex-col ml-64">
                     <div class="bg-surface shadow-sm p-3 border-b border-border-color flex justify-between items-center">
-                        <span class="text-lg font-semibold text-text-primary">@Localizer["ApplicationTitle"]</span>
+                        <span class="text-lg font-semibold text-text-primary">@Strings.ApplicationTitle</span>
                         <div class="flex items-center space-x-3">
                             <span class="text-sm text-text-secondary">@CurrentUserService.Username</span>
                             <button class="btn btn-secondary btn-sm" @onclick="HandleLogout">
-                                @Localizer["LogoutButton"]
+                                @Strings.LogoutButton
                             </button>
                         </div>
                     </div>
@@ -47,6 +45,14 @@
 </div>
 
 @code {
+    private AppStrings Strings = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        Strings = await I18nTextService.GetTextTableAsync<AppStrings>(this);
+        await base.OnInitializedAsync();
+    }
+
     private void HandleLogout()
     {
         AuthStateProviderService.NotifyUserLogout();

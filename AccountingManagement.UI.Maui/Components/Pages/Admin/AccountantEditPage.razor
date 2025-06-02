@@ -5,16 +5,16 @@
 
 @inject IUserService AppUserService
 @inject NavigationManager NavManager
-@inject IStringLocalizer<AppStrings> Localizer
+@inject Toolbelt.Blazor.I18nText.I18nText I18nTextService
 
 @if (isLoading)
 {
-    <LoadingIndicator />
+    <LoadingIndicator Message="@Strings.Loading" />
 }
 else
 {
     <div class="page-header">
-        <h1>@(IsNewUser ? Localizer["AddAccountantPageTitle"] : Localizer["EditAccountantPageTitle"])</h1>
+        <h1>@(IsNewUser ? Strings.AddAccountantPageTitle : Strings.EditAccountantPageTitle)</h1>
     </div>
 
     <EditForm Model="@userModel" OnValidSubmit="HandleValidSubmit">
@@ -26,13 +26,13 @@ else
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                        <label for="fullName" class="form-label">@Localizer["UserFullName"]</label>
+                        <label for="fullName" class="form-label">@Strings.UserFullName</label>
                         <InputText id="fullName" class="form-input" @bind-Value="userModel.FullName" />
                         <ValidationMessage For="@(() => userModel.FullName)" class="validation-message" />
                     </div>
 
                     <div>
-                        <label for="username" class="form-label">@Localizer["UsernameLabel"]</label>
+                        <label for="username" class="form-label">@Strings.UsernameLabel</label>
                         <InputText id="username" class="form-input" @bind-Value="userModel.Username" disabled="@(!IsNewUser && userModel.Username.ToLower() == "admin")" />
                         <ValidationMessage For="@(() => userModel.Username)" class="validation-message" />
                         @if (!string.IsNullOrEmpty(formErrorMessage))
@@ -42,17 +42,17 @@ else
                     </div>
 
                     <div>
-                        <label for="email" class="form-label">@Localizer["UserEmail"]</label>
+                        <label for="email" class="form-label">@Strings.UserEmail</label>
                         <InputText id="email" type="email" class="form-input" @bind-Value="userModel.Email" />
                         <ValidationMessage For="@(() => userModel.Email)" class="validation-message" />
                     </div>
 
                     <div>
-                        <label for="role" class="form-label">@Localizer["UserRole"]</label>
+                        <label for="role" class="form-label">@Strings.UserRole</label>
                         <InputSelect id="role" class="form-select" @bind-Value="userModel.Role" disabled="@(!IsNewUser && userModel.Username.ToLower() == "admin")">
                             @foreach (var role in Enum.GetValues<UserRole>())
                             {
-                                <option value="@role">@Localizer[$"UserRole{role}"]</option>
+                                <option value="@role">@GetLocalizedUserRole(role)</option>
                             }
                         </InputSelect>
                         <ValidationMessage For="@(() => userModel.Role)" class="validation-message" />
@@ -60,15 +60,15 @@ else
 
                     <div>
                         <label for="password" class="form-label">
-                            @Localizer["PasswordLabel"]
-                            @if (!IsNewUser) { <span class="text-xs text-gray-500">@Localizer["OptionalLeaveBlank"]</span> }
+                            @Strings.PasswordLabel
+                            @if (!IsNewUser) { <span class="text-xs text-gray-500">@Strings.OptionalLeaveBlank</span> }
                         </label>
                         <InputText id="password" type="password" class="form-input" @bind-Value="userModel.Password" />
                         <ValidationMessage For="@(() => userModel.Password)" class="validation-message" />
                     </div>
 
                     <div>
-                        <label for="confirmPassword" class="form-label">@Localizer["UserPasswordConfirm"]</label>
+                        <label for="confirmPassword" class="form-label">@Strings.UserPasswordConfirm</label>
                         <InputText id="confirmPassword" type="password" class="form-input" @bind-Value="userModel.ConfirmPassword" />
                         <ValidationMessage For="@(() => userModel.ConfirmPassword)" class="validation-message" />
                     </div>
@@ -79,22 +79,22 @@ else
                     <div class="pt-2">
                         <label class="form-label flex items-center">
                             <InputCheckbox @bind-Value="userModel.IsActive" class="form-checkbox mr-2" disabled="@(userModel.Username.ToLower() == "admin")" />
-                            @Localizer["UserIsActive"]
+                            @Strings.UserIsActive
                         </label>
                          <ValidationMessage For="@(() => userModel.IsActive)" class="validation-message" />
                     </div>
                 }
             </div>
             <div class="card-footer flex justify-end space-x-3">
-                <button type="button" class="btn btn-secondary" @onclick="Cancel">@Localizer["Cancel"]</button>
+                <button type="button" class="btn btn-secondary" @onclick="Cancel">@Strings.Cancel</button>
                 <button type="submit" class="btn btn-primary" disabled="@isSaving">
                     @if (isSaving)
                     {
-                        <LoadingSpinner Small="true" /> @Localizer["Saving"]
+                        <LoadingSpinner Small="true" /> @Strings.Saving
                     }
                     else
                     {
-                        @Localizer["Save"]
+                        @Strings.Save
                     }
                 </button>
             </div>
@@ -113,9 +113,11 @@ else
     private bool IsNewUser => UserId == null;
     private bool isLoading = true;
     private bool isSaving = false;
+    private AppStrings Strings = new();
 
     protected override async Task OnInitializedAsync()
     {
+        Strings = await I18nTextService.GetTextTableAsync<AppStrings>(this);
         if (!IsNewUser && UserId.HasValue)
         {
             var loadedUser = await AppUserService.GetUserByIdAsync(UserId.Value);
@@ -131,16 +133,27 @@ else
             }
             else
             {
-                NavManager.NavigateTo("/admin/accountants"); // Not found
+                NavManager.NavigateTo("/admin/accountants"); 
                 return;
             }
         }
-        else // New user
+        else 
         {
             userModel.IsActive = true;
             userModel.Role = UserRole.Accountant;
         }
         isLoading = false;
+        await base.OnInitializedAsync();
+    }
+
+    private string GetLocalizedUserRole(UserRole role)
+    {
+        return role switch
+        {
+            UserRole.Accountant => Strings.UserRoleAccountant,
+            UserRole.Admin => Strings.UserRoleAdmin,
+            _ => role.ToString()
+        };
     }
 
     private async Task HandleValidSubmit()
@@ -156,7 +169,7 @@ else
                 var createUserDto = new CreateUserDto
                 {
                     Username = userModel.Username,
-                    Password = userModel.Password!, // Validation ensures not null for new user
+                    Password = userModel.Password!, 
                     ConfirmPassword = userModel.ConfirmPassword!,
                     FullName = userModel.FullName,
                     Email = userModel.Email,
@@ -170,7 +183,7 @@ else
                 {
                     Id = userModel.Id,
                     Username = userModel.Username,
-                    Password = userModel.Password, // Can be null if not changing
+                    Password = userModel.Password, 
                     ConfirmPassword = userModel.ConfirmPassword,
                     FullName = userModel.FullName,
                     Email = userModel.Email,
@@ -181,13 +194,25 @@ else
             }
             NavManager.NavigateTo("/admin/accountants");
         }
-        catch (ArgumentException ex) // Specific for username exists or other validation
+        catch (ArgumentException ex) 
         {
-            formErrorMessage = ex.Message; // Consider more user-friendly messages
+            // Attempt to map common argument exceptions to localized strings
+            if (ex.Message.Contains("Username already exists", StringComparison.OrdinalIgnoreCase))
+            {
+                 formErrorMessage = Strings.UserUsernameExists;
+            } 
+            else if (ex.Message.Contains("Passwords do not match", StringComparison.OrdinalIgnoreCase)) // This validation is usually client-side via [Compare]
+            {
+                formErrorMessage = Strings.UserPasswordMismatch; // Should be caught by DataAnnotations
+            }
+            else 
+            {
+                formErrorMessage = ex.Message; // Fallback to raw message
+            }
         }
         catch (Exception ex)
         {
-            formErrorMessage = "An unexpected error occurred."; // General error
+            formErrorMessage = Strings.Saving; // Generic error like "Error saving" could be a key
             Console.WriteLine($"Error saving user: {ex.Message}");
         }
         finally
@@ -206,27 +231,25 @@ else
     {
         public int Id { get; set; }
 
-        [Required]
-        [StringLength(150)]
+        [Required(ErrorMessage = "FullNameRequired")] 
+        [StringLength(150, ErrorMessage = "FullNameLength")]
         public string FullName { get; set; } = string.Empty;
 
-        [Required]
-        [StringLength(100, MinimumLength = 3)]
+        [Required(ErrorMessage = "UsernameRequired")] 
+        [StringLength(100, MinimumLength = 3, ErrorMessage = "UsernameLength")]
         public string Username { get; set; } = string.Empty;
 
-        [Required]
-        [EmailAddress]
+        [Required(ErrorMessage = "EmailRequired")] 
+        [EmailAddress(ErrorMessage = "InvalidEmailFormat")]
         public string Email { get; set; } = string.Empty;
 
         public UserRole Role { get; set; } = UserRole.Accountant;
         public bool IsActive { get; set; } = true;
         
-        // Password is required for new user. For existing user, it's optional.
-        // This could be handled by custom validation attribute or in HandleValidSubmit.
-        [StringLength(100, MinimumLength = 6)]
+        [StringLength(100, MinimumLength = 6, ErrorMessage = "PasswordLength")]
         public string? Password { get; set; }
 
-        [Compare(nameof(Password))]
+        [Compare(nameof(Password), ErrorMessage = "PasswordsDontMatch")]
         public string? ConfirmPassword { get; set; }
 
         [CustomValidation(typeof(UserFormModel), nameof(ValidatePasswordForNewUser))]
@@ -235,14 +258,9 @@ else
         public static ValidationResult? ValidatePasswordForNewUser(string? password, ValidationContext context)
         {
             var instance = (UserFormModel)context.ObjectInstance;
-            if (instance.Id == 0 && string.IsNullOrWhiteSpace(password)) // Id == 0 implies new user
+            if (instance.Id == 0 && string.IsNullOrWhiteSpace(password)) 
             {
-                // This won't work directly with ErrorMessageResourceType like this in static method
-                // You'd need to fetch the localized string manually.
-                // For simplicity, using a non-localized string or handling localization in UI.
-                var localizer = (IStringLocalizer<AppStrings>?)context.GetService(typeof(IStringLocalizer<AppStrings>));
-                var errorMessage = localizer?["PasswordRequiredForNewUser"] ?? "Password is required for a new user.";
-                return new ValidationResult(errorMessage, new[] { nameof(Password) });
+                return new ValidationResult("PasswordRequiredForNewUser", new[] { nameof(Password) });
             }
             return ValidationResult.Success;
         }

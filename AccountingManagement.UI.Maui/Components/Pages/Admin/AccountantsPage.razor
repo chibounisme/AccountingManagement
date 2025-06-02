@@ -2,25 +2,25 @@
 @attribute [Authorize(Roles = "Admin")]
 @inject IUserService AppUserService
 @inject NavigationManager NavManager
-@inject IStringLocalizer<AppStrings> Localizer
+@inject Toolbelt.Blazor.I18nText.I18nText I18nTextService
 @inject IJSRuntime JSRuntime
 
-<PageTitle>@Localizer["AccountantsPageTitle"]</PageTitle>
+<PageTitle>@Strings.AccountantsPageTitle</PageTitle>
 
 <div class="page-header">
-    <h1>@Localizer["AccountantsPageTitle"]</h1>
+    <h1>@Strings.AccountantsPageTitle</h1>
     <button class="btn btn-primary" @onclick="AddNewAccountant">
-        @Localizer["Add"] @Localizer["MenuAccountants"]
+        @Strings.Add @Strings.MenuAccountants
     </button>
 </div>
 
 @if (isLoading)
 {
-    <LoadingIndicator />
+    <LoadingIndicator Message="@Strings.Loading" />
 }
 else if (users == null || !users.Any())
 {
-    <p class="text-text-secondary">@Localizer["NoAccountantsFound"]</p>
+    <p class="text-text-secondary">@Strings.NoAccountantsFound</p>
 }
 else
 {
@@ -28,12 +28,12 @@ else
         <table class="table">
             <thead>
                 <tr>
-                    <th>@Localizer["UserFullName"]</th>
-                    <th>@Localizer["UsernameLabel"]</th>
-                    <th>@Localizer["UserEmail"]</th>
-                    <th>@Localizer["UserRole"]</th>
-                    <th>@Localizer["UserIsActive"]</th>
-                    <th class="text-right">@Localizer["Actions"]</th>
+                    <th>@Strings.UserFullName</th>
+                    <th>@Strings.UsernameLabel</th>
+                    <th>@Strings.UserEmail</th>
+                    <th>@Strings.UserRole</th>
+                    <th>@Strings.UserIsActive</th>
+                    <th class="text-right">@Strings.Actions</th>
                 </tr>
             </thead>
             <tbody>
@@ -43,20 +43,20 @@ else
                         <td>@user.FullName</td>
                         <td>@user.Username</td>
                         <td>@user.Email</td>
-                        <td>@Localizer[$"UserRole{user.Role}"]</td>
+                        <td>@GetLocalizedUserRole(user.Role)</td>
                         <td>
                             <span class="@(user.IsActive ? "text-green-600 font-semibold" : "text-red-600 font-semibold")">
-                                @(user.IsActive ? Localizer["Active"] : Localizer["Inactive"])
+                                @(user.IsActive ? Strings.Active : Strings.Inactive)
                             </span>
                         </td>
                         <td class="text-right table-actions">
-                            <button class="btn btn-secondary btn-xs" @onclick="() => EditAccountant(user.Id)">@Localizer["Edit"]</button>
+                            <button class="btn btn-secondary btn-xs" @onclick="() => EditAccountant(user.Id)">@Strings.Edit</button>
                             <button class="btn @(user.IsActive ? "btn-warning" : "btn-success") btn-xs" @onclick="() => ToggleAccountantStatus(user)">
-                                @(user.IsActive ? Localizer["Disable"] : Localizer["Enable"])
+                                @(user.IsActive ? Strings.Disable : Strings.Enable)
                             </button>
                             @if (user.Username.ToLower() != "admin")
                             {
-                                <button class="btn btn-danger btn-xs" @onclick="() => ConfirmDeleteAccountant(user)">@Localizer["Delete"]</button>
+                                <button class="btn btn-danger btn-xs" @onclick="() => ConfirmDeleteAccountant(user)">@Strings.Delete</button>
                             }
                         </td>
                     </tr>
@@ -72,29 +72,43 @@ else
     private List<UserDto>? users;
     private bool isLoading = true;
     private ConfirmDialog? confirmDialog;
+    private AppStrings Strings = new();
 
     protected override async Task OnInitializedAsync()
     {
+        Strings = await I18nTextService.GetTextTableAsync<AppStrings>(this);
         await LoadUsers();
+        await base.OnInitializedAsync();
     }
 
     private async Task LoadUsers()
     {
         isLoading = true;
+        StateHasChanged(); // Ensure loading indicator shows immediately
         try
         {
             users = (await AppUserService.GetAllUsersAsync()).OrderBy(u => u.FullName).ToList();
         }
         catch (Exception ex)
         {
-            // Log error, show message to user
             Console.WriteLine($"Error loading users: {ex.Message}");
-            users = new List<UserDto>(); // Prevent null ref
+            users = new List<UserDto>(); 
         }
         finally
         {
             isLoading = false;
+            StateHasChanged();
         }
+    }
+    
+    private string GetLocalizedUserRole(UserRole role)
+    {
+        return role switch
+        {
+            UserRole.Accountant => Strings.UserRoleAccountant,
+            UserRole.Admin => Strings.UserRoleAdmin,
+            _ => role.ToString()
+        };
     }
 
     private void AddNewAccountant()
@@ -111,18 +125,17 @@ else
     {
         if (user.Username.ToLower() == "admin") return;
 
-        var confirmationMessage = user.IsActive ? Localizer["ConfirmDisableUser", user.FullName] : Localizer["ConfirmEnableUser", user.FullName];
+        var confirmationMessage = user.IsActive ? string.Format(Strings.ConfirmDisableUser, user.FullName) : string.Format(Strings.ConfirmEnableUser, user.FullName);
         
         if (confirmDialog != null && await confirmDialog.ShowAsync(confirmationMessage!))
         {
             try
             {
                 await AppUserService.UpdateUserStatusAsync(user.Id, !user.IsActive);
-                await LoadUsers();
+                await LoadUsers(); 
             }
             catch (Exception ex)
             {
-                // Log error, show message
                 Console.WriteLine($"Error toggling user status: {ex.Message}");
             }
         }
@@ -132,11 +145,11 @@ else
     {
         if (user.Username.ToLower() == "admin")
         {
-            await JSRuntime.InvokeVoidAsync("alert", Localizer["CannotDeleteAdminUser"]);
+            await JSRuntime.InvokeVoidAsync("alert", Strings.CannotDeleteAdminUser);
             return;
         }
         
-        if (confirmDialog != null && await confirmDialog.ShowAsync(Localizer["ConfirmDeleteMessage", user.FullName]!))
+        if (confirmDialog != null && await confirmDialog.ShowAsync(string.Format(Strings.ConfirmDeleteMessage, user.FullName)!))
         {
             try
             {
@@ -145,7 +158,6 @@ else
             }
             catch (Exception ex)
             {
-                 // Log error, show message
                 Console.WriteLine($"Error deleting user: {ex.Message}");
             }
         }

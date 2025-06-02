@@ -11,22 +11,18 @@ public class UserService : IUserService
     private readonly IUserRepository _userRepository;
     private readonly IPasswordHasher _passwordHasher;
     private readonly IDateTimeProvider _dateTimeProvider;
-    // private readonly IMapper _mapper; // For DTO mapping
 
     public UserService(
         IUserRepository userRepository, 
         IPasswordHasher passwordHasher,
         IDateTimeProvider dateTimeProvider
-        // IMapper mapper
         )
     {
         _userRepository = userRepository;
         _passwordHasher = passwordHasher;
         _dateTimeProvider = dateTimeProvider;
-        // _mapper = mapper;
     }
 
-    // Manual mapping for now, replace with AutoMapper
     private UserDto MapToDto(User user)
     {
         return new UserDto
@@ -48,7 +44,7 @@ public class UserService : IUserService
     {
         if (await _userRepository.UsernameExistsAsync(createUserDto.Username))
         {
-            throw new ArgumentException("Username already exists.", nameof(createUserDto.Username)); // Or custom exception
+            throw new ArgumentException("Username already exists.", nameof(createUserDto.Username));
         }
 
         var passwordHash = _passwordHasher.HashPassword(createUserDto.Password);
@@ -113,11 +109,9 @@ public class UserService : IUserService
             throw new ArgumentException("New username already exists.", nameof(updateUserDto.Username));
         }
         
-        // Prevent changing admin role or status if it's the 'admin' user
         if (user.Username.Equals("admin", StringComparison.OrdinalIgnoreCase) && 
             (updateUserDto.Role != Domain.Enums.UserRole.Admin || !updateUserDto.IsActive))
         {
-            // Silently correct or throw error. For now, correct.
             updateUserDto.Role = Domain.Enums.UserRole.Admin;
             updateUserDto.IsActive = true;
         }
@@ -125,11 +119,6 @@ public class UserService : IUserService
         user.FullName = updateUserDto.FullName;
         user.Email = updateUserDto.Email;
         user.Role = updateUserDto.Role;
-
-        // Username update must be handled carefully, it's an identifier.
-        // For simplicity, if Username is part of UpdateUserDto and allowed to change:
-        // user.Username = updateUserDto.Username; // Not directly supported by User entity method, make entity method if needed or handle here.
-
         if (!string.IsNullOrWhiteSpace(updateUserDto.Password))
         {
             user.UpdatePassword(_passwordHasher.HashPassword(updateUserDto.Password));

@@ -21,7 +21,7 @@ public class Company : AuditableEntity
     public string TradeRegisterNumber { get; set; } = string.Empty;
 
     [MaxLength(250)]
-    public string Address { get; set; } = string.Empty; // Could be a Value Object
+    public string Address { get; set; } = string.Empty;
 
     [MaxLength(100)]
     public string City { get; set; } = string.Empty;

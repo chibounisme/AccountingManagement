@@ -3,34 +3,29 @@ using AccountingManagement.Application.Companies.DTOs;
 using AccountingManagement.Domain.Entities;
 using AccountingManagement.Domain.Interfaces;
 using AccountingManagement.Domain.Exceptions;
-// using AutoMapper;
 
 namespace AccountingManagement.Application.Companies.Services;
 
 public class CompanyService : ICompanyService
 {
     private readonly ICompanyRepository _companyRepository;
-    private readonly IUserRepository _userRepository; // To fetch accountant names
+    private readonly IUserRepository _userRepository;
     private readonly ICurrentUserService _currentUserService;
     private readonly IDateTimeProvider _dateTimeProvider;
-    // private readonly IMapper _mapper;
 
     public CompanyService(
         ICompanyRepository companyRepository,
         IUserRepository userRepository,
         ICurrentUserService currentUserService,
         IDateTimeProvider dateTimeProvider
-        // IMapper mapper
         )
     {
         _companyRepository = companyRepository;
         _userRepository = userRepository;
         _currentUserService = currentUserService;
         _dateTimeProvider = dateTimeProvider;
-        // _mapper = mapper;
     }
 
-    // Manual mapping for now
     private async Task<CompanyDto> MapToDto(Company company)
     {
         string? accountantFullName = null;
@@ -71,7 +66,6 @@ public class CompanyService : ICompanyService
         }
         return dtos;
     }
-
 
     public async Task<CompanyDto> CreateCompanyAsync(CreateCompanyDto createCompanyDto)
     {
@@ -114,7 +108,6 @@ public class CompanyService : ICompanyService
         var company = await _companyRepository.GetByIdAsync(id);
         if (company == null) throw new EntityNotFoundException(nameof(Company), id);
 
-        // Authorization: Ensure current user can delete this company
         if (_currentUserService.UserRole == Domain.Enums.UserRole.Accountant && company.AccountantId != _currentUserService.UserId)
         {
             throw new UnauthorizedAccessException("Accountants can only delete companies assigned to them.");
@@ -125,8 +118,6 @@ public class CompanyService : ICompanyService
 
     public async Task<List<CompanyDto>> GetAllCompaniesAsync()
     {
-        // This should typically be restricted or paginated in a real app
-        // For admin use or small datasets.
         if (_currentUserService.UserRole != Domain.Enums.UserRole.Admin)
         {
             throw new UnauthorizedAccessException("Only admins can view all companies.");
@@ -153,7 +144,7 @@ public class CompanyService : ICompanyService
         }
         else
         {
-            return new List<CompanyDto>(); // Or throw
+            return new List<CompanyDto>();
         }
         return await MapToDtoList(companies);
     }
@@ -164,7 +155,6 @@ public class CompanyService : ICompanyService
         var company = await _companyRepository.GetByIdAsync(id);
         if (company == null) return null;
 
-        // Authorization check
         if (_currentUserService.UserRole == Domain.Enums.UserRole.Accountant && company.AccountantId != _currentUserService.UserId)
         {
             throw new UnauthorizedAccessException("You are not authorized to view this company.");
@@ -177,7 +167,6 @@ public class CompanyService : ICompanyService
         var company = await _companyRepository.GetByIdAsync(updateCompanyDto.Id);
         if (company == null) throw new EntityNotFoundException(nameof(Company), updateCompanyDto.Id);
 
-        // Authorization check
         if (_currentUserService.UserRole == Domain.Enums.UserRole.Accountant && company.AccountantId != _currentUserService.UserId)
         {
             throw new UnauthorizedAccessException("You are not authorized to update this company.");
@@ -204,7 +193,6 @@ public class CompanyService : ICompanyService
             else
                 company.UnassignAccountant();
         }
-        // Accountants cannot reassign companies via this method directly.
 
         company.LastModifiedDate = _dateTimeProvider.UtcNow;
         company.LastModifiedBy = _currentUserService.Username;

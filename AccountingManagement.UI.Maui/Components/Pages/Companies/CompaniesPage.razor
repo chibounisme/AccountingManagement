@@ -2,28 +2,27 @@
 @using AccountingManagement.Application.Abstractions
 @attribute [Authorize(Roles = "Admin, Accountant")]
 @inject ICompanyService AppCompanyService
-@inject IUserService AppUserService
 @inject ICurrentUserService CurrentUserService
 @inject NavigationManager NavManager
-@inject IStringLocalizer<AppStrings> Localizer
+@inject Toolbelt.Blazor.I18nText.I18nText I18nTextService
 @inject IJSRuntime JSRuntime
 
-<PageTitle>@Localizer["CompaniesPageTitle"]</PageTitle>
+<PageTitle>@Strings.CompaniesPageTitle</PageTitle>
 
 <div class="page-header">
-    <h1>@Localizer["CompaniesPageTitle"]</h1>
+    <h1>@Strings.CompaniesPageTitle</h1>
     <button class="btn btn-primary" @onclick="AddNewCompany">
-        @Localizer["Add"] @Localizer["MenuCompanies"]
+        @Strings.Add @Strings.MenuCompanies
     </button>
 </div>
 
 @if (isLoading)
 {
-    <LoadingIndicator />
+    <LoadingIndicator Message="@Strings.Loading" />
 }
 else if (companies == null || !companies.Any())
 {
-    <p class="text-text-secondary">@Localizer["NoCompaniesFound"]</p>
+    <p class="text-text-secondary">@Strings.NoCompaniesFound</p>
 }
 else
 {
@@ -31,15 +30,15 @@ else
         <table class="table">
             <thead>
                 <tr>
-                    <th>@Localizer["CompanyName"]</th>
-                    <th>@Localizer["CompanyLegalName"]</th>
-                    <th>@Localizer["CompanyTaxId"]</th>
-                    <th>@Localizer["CompanyCity"]</th>
+                    <th>@Strings.CompanyName</th>
+                    <th>@Strings.CompanyLegalName</th>
+                    <th>@Strings.CompanyTaxId</th>
+                    <th>@Strings.CompanyCity</th>
                     @if (CurrentUserService.UserRole == UserRole.Admin)
                     {
-                        <th>@Localizer["CompanyAccountant"]</th>
+                        <th>@Strings.CompanyAccountant</th>
                     }
-                    <th class="text-right">@Localizer["Actions"]</th>
+                    <th class="text-right">@Strings.Actions</th>
                 </tr>
             </thead>
             <tbody>
@@ -52,11 +51,11 @@ else
                         <td>@company.City</td>
                         @if (CurrentUserService.UserRole == UserRole.Admin)
                         {
-                            <td>@(company.AccountantFullName ?? Localizer["NotAssigned"])</td>
+                            <td>@(company.AccountantFullName ?? Strings.NotAssigned)</td>
                         }
                         <td class="text-right table-actions">
-                            <button class="btn btn-secondary btn-xs" @onclick="() => EditCompany(company.Id)">@Localizer["Edit"]</button>
-                            <button class="btn btn-danger btn-xs" @onclick="() => ConfirmDeleteCompany(company)">@Localizer["Delete"]</button>
+                            <button class="btn btn-secondary btn-xs" @onclick="() => EditCompany(company.Id)">@Strings.Edit</button>
+                            <button class="btn btn-danger btn-xs" @onclick="() => ConfirmDeleteCompany(company)">@Strings.Delete</button>
                         </td>
                     </tr>
                 }
@@ -71,15 +70,19 @@ else
     private List<CompanyDto>? companies;
     private bool isLoading = true;
     private ConfirmDialog? confirmDialog;
+    private AppStrings Strings = new();
 
     protected override async Task OnInitializedAsync()
     {
+        Strings = await I18nTextService.GetTextTableAsync<AppStrings>(this);
         await LoadCompanies();
+        await base.OnInitializedAsync();
     }
 
     private async Task LoadCompanies()
     {
         isLoading = true;
+        StateHasChanged(); // Ensure loading indicator shows
         try
         {
             companies = await AppCompanyService.GetCompaniesForCurrentUserAsync();
@@ -93,6 +96,7 @@ else
         finally
         {
             isLoading = false;
+            StateHasChanged();
         }
     }
 
@@ -108,7 +112,7 @@ else
 
     private async Task ConfirmDeleteCompany(CompanyDto company)
     {
-        if (confirmDialog != null && await confirmDialog.ShowAsync(Localizer["ConfirmDeleteMessage", company.Name]!))
+        if (confirmDialog != null && await confirmDialog.ShowAsync(string.Format(Strings.ConfirmDeleteMessage, company.Name)!))
         {
             try
             {

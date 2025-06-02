@@ -1,8 +1,30 @@
+@inject Toolbelt.Blazor.I18nText.I18nText I18nTextService
+
 <div class="flex justify-center items-center p-4">
     <div class="animate-spin rounded-full h-10 w-10 border-b-2 border-primary"></div>
-    <span class="ml-3 text-text-secondary">@Message</span>
+    <span class="ml-3 text-text-secondary">@(UserProvidedMessage ?? Strings.Loading)</span>
 </div>
 
 @code {
-    [Parameter] public string Message { get; set; } = "Loading...";
+    [Parameter] public string? Message { get; set; }
+    private string? UserProvidedMessage; // To store the original parameter value
+    private AppStrings Strings = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        Strings = await I18nTextService.GetTextTableAsync<AppStrings>(this);
+        UserProvidedMessage = Message; // Store user-provided message
+        if (string.IsNullOrEmpty(UserProvidedMessage) && Strings.Loading != null)
+        {
+            // If user did not provide a message, use the default localized "Loading..."
+            // No need to set Message here, the render logic handles it.
+        }
+        await base.OnInitializedAsync();
+    }
+
+    protected override void OnParametersSet()
+    {
+        // Update UserProvidedMessage if the Message parameter changes after initial load
+        UserProvidedMessage = Message;
+    }
 }

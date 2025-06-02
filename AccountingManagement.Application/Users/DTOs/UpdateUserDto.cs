@@ -12,7 +12,7 @@ public class UpdateUserDto
     public string Username { get; set; } = string.Empty;
     
     [StringLength(100, MinimumLength = 6, ErrorMessage = "PasswordLength")]
-    public string? Password { get; set; } // Optional: only if changing
+    public string? Password { get; set; }
 
     [Compare(nameof(Password), ErrorMessage = "PasswordsDontMatch")]
     public string? ConfirmPassword { get; set; }

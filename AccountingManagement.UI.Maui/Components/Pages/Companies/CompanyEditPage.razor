@@ -8,16 +8,16 @@
 @inject IUserService AppUserService
 @inject ICurrentUserService CurrentUserService
 @inject NavigationManager NavManager
-@inject IStringLocalizer<AppStrings> Localizer
+@inject Toolbelt.Blazor.I18nText.I18nText I18nTextService
 
 @if (isLoading)
 {
-    <LoadingIndicator />
+    <LoadingIndicator Message="@Strings.Loading" />
 }
 else
 {
     <div class="page-header">
-        <h1>@(IsNewCompany ? Localizer["AddCompanyPageTitle"] : Localizer["EditCompanyPageTitle"])</h1>
+        <h1>@(IsNewCompany ? Strings.AddCompanyPageTitle : Strings.EditCompanyPageTitle)</h1>
     </div>
 
     <EditForm Model="@companyModel" OnValidSubmit="HandleValidSubmit">
@@ -29,48 +29,48 @@ else
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
                     <div>
-                        <label for="companyName" class="form-label">@Localizer["CompanyName"]</label>
+                        <label for="companyName" class="form-label">@Strings.CompanyName</label>
                         <InputText id="companyName" class="form-input" @bind-Value="companyModel.Name" />
                         <ValidationMessage For="@(() => companyModel.Name)" class="validation-message" />
                     </div>
 
                     <div>
-                        <label for="legalName" class="form-label">@Localizer["CompanyLegalName"]</label>
+                        <label for="legalName" class="form-label">@Strings.CompanyLegalName</label>
                         <InputText id="legalName" class="form-input" @bind-Value="companyModel.LegalName" />
                         <ValidationMessage For="@(() => companyModel.LegalName)" class="validation-message" />
                     </div>
 
                     <div>
-                        <label for="taxId" class="form-label">@Localizer["CompanyTaxId"]</label>
+                        <label for="taxId" class="form-label">@Strings.CompanyTaxId</label>
                         <InputText id="taxId" class="form-input" @bind-Value="companyModel.TaxIdentificationNumber" />
                         <ValidationMessage For="@(() => companyModel.TaxIdentificationNumber)" class="validation-message" />
                     </div>
 
                     <div>
-                        <label for="tradeRegister" class="form-label">@Localizer["CompanyTradeRegister"]</label>
+                        <label for="tradeRegister" class="form-label">@Strings.CompanyTradeRegister</label>
                         <InputText id="tradeRegister" class="form-input" @bind-Value="companyModel.TradeRegisterNumber" />
                         <ValidationMessage For="@(() => companyModel.TradeRegisterNumber)" class="validation-message" />
                     </div>
 
                     <div>
-                        <label for="activityCode" class="form-label">@Localizer["CompanyActivityCode"]</label>
+                        <label for="activityCode" class="form-label">@Strings.CompanyActivityCode</label>
                         <InputText id="activityCode" class="form-input" @bind-Value="companyModel.ActivityCode" />
                         <ValidationMessage For="@(() => companyModel.ActivityCode)" class="validation-message" />
                     </div>
 
                     <div>
-                        <label for="legalForm" class="form-label">@Localizer["CompanyLegalForm"]</label>
+                        <label for="legalForm" class="form-label">@Strings.CompanyLegalForm</label>
                         <InputSelect id="legalForm" class="form-select" @bind-Value="companyModel.LegalForm">
                             @foreach (var legalFormValue in Enum.GetValues<LegalForm>())
                             {
-                                <option value="@legalFormValue">@Localizer[$"LegalForm_{legalFormValue}"]</option>
+                                <option value="@legalFormValue">@GetLocalizedLegalForm(legalFormValue)</option>
                             }
                         </InputSelect>
                         <ValidationMessage For="@(() => companyModel.LegalForm)" class="validation-message" />
                     </div>
 
                     <div class="md:col-span-2">
-                        <label for="creationDate" class="form-label">@Localizer["CompanyCreationDate"]</label>
+                        <label for="creationDate" class="form-label">@Strings.CompanyCreationDate</label>
                         <InputDate id="creationDate" class="form-input" @bind-Value="companyModel.CompanyCreationDate" />
                         <ValidationMessage For="@(() => companyModel.CompanyCreationDate)" class="validation-message" />
                     </div>
@@ -78,9 +78,9 @@ else
                     @if (currentUserIsAdmin)
                     {
                         <div class="md:col-span-2">
-                            <label for="accountant" class="form-label">@Localizer["CompanyAccountant"]</label>
+                            <label for="accountant" class="form-label">@Strings.CompanyAccountant</label>
                             <InputSelect id="accountant" class="form-select" @bind-Value="companyModel.AccountantId">
-                                <option value="">@Localizer["SelectAccountant"]</option>
+                                <option value="">@Strings.SelectAccountant</option>
                                 @if (availableAccountants != null)
                                 {
                                     @foreach (var acc in availableAccountants)
@@ -95,56 +95,56 @@ else
                 </div>
 
                 <hr class="my-6 border-border-color" />
-                <h3 class="text-lg font-medium leading-6 text-text-primary mb-4">@Localizer["CompanyContactInfo"]</h3>
+                <h3 class="text-lg font-medium leading-6 text-text-primary mb-4">@Strings.CompanyContactInfo</h3>
                 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
                     <div class="md:col-span-2">
-                        <label for="address" class="form-label">@Localizer["CompanyAddress"]</label>
+                        <label for="address" class="form-label">@Strings.CompanyAddress</label>
                         <InputText id="address" class="form-input" @bind-Value="companyModel.Address" />
                         <ValidationMessage For="@(() => companyModel.Address)" class="validation-message" />
                     </div>
 
                     <div>
-                        <label for="city" class="form-label">@Localizer["CompanyCity"]</label>
+                        <label for="city" class="form-label">@Strings.CompanyCity</label>
                         <InputText id="city" class="form-input" @bind-Value="companyModel.City" />
                         <ValidationMessage For="@(() => companyModel.City)" class="validation-message" />
                     </div>
 
                     <div>
-                        <label for="postalCode" class="form-label">@Localizer["CompanyPostalCode"]</label>
+                        <label for="postalCode" class="form-label">@Strings.CompanyPostalCode</label>
                         <InputText id="postalCode" class="form-input" @bind-Value="companyModel.PostalCode" />
                         <ValidationMessage For="@(() => companyModel.PostalCode)" class="validation-message" />
                     </div>
 
                     <div>
-                        <label for="country" class="form-label">@Localizer["CompanyCountry"]</label>
+                        <label for="country" class="form-label">@Strings.CompanyCountry</label>
                         <InputText id="country" class="form-input" @bind-Value="companyModel.Country" />
                         <ValidationMessage For="@(() => companyModel.Country)" class="validation-message" />
                     </div>
 
                     <div>
-                        <label for="phone" class="form-label">@Localizer["CompanyPhoneNumber"]</label>
+                        <label for="phone" class="form-label">@Strings.CompanyPhoneNumber</label>
                         <InputText id="phone" type="tel" class="form-input" @bind-Value="companyModel.PhoneNumber" />
                         <ValidationMessage For="@(() => companyModel.PhoneNumber)" class="validation-message" />
                     </div>
                     
                     <div class="md:col-span-2">
-                        <label for="email" class="form-label">@Localizer["CompanyEmail"]</label>
+                        <label for="email" class="form-label">@Strings.CompanyEmail</label>
                         <InputText id="email" type="email" class="form-input" @bind-Value="companyModel.Email" />
                         <ValidationMessage For="@(() => companyModel.Email)" class="validation-message" />
                     </div>
                 </div>
             </div>
             <div class="card-footer flex justify-end space-x-3">
-                <button type="button" class="btn btn-secondary" @onclick="Cancel">@Localizer["Cancel"]</button>
+                <button type="button" class="btn btn-secondary" @onclick="Cancel">@Strings.Cancel</button>
                 <button type="submit" class="btn btn-primary" disabled="@isSaving">
                      @if (isSaving)
                     {
-                        <LoadingSpinner Small="true" /> @Localizer["Saving"]
+                        <LoadingSpinner Small="true" /> @Strings.Saving
                     }
                     else
                     {
-                        @Localizer["Save"]
+                        @Strings.Save
                     }
                 </button>
             </div>
@@ -156,8 +156,6 @@ else
     [Parameter]
     public int? CompanyId { get; set; }
 
-    // Using CreateCompanyDto for new, UpdateCompanyDto for edit is more robust with specific validation.
-    // For simplicity here, using a single model that maps to both.
     private CompanyFormModel companyModel = new() { CompanyCreationDate = DateTime.Today, Country = "Tunisie" };
     private List<UserDto>? availableAccountants;
 
@@ -165,9 +163,11 @@ else
     private bool isLoading = true;
     private bool isSaving = false;
     private bool currentUserIsAdmin = false;
+    private AppStrings Strings = new();
     
     protected override async Task OnInitializedAsync()
     {
+        Strings = await I18nTextService.GetTextTableAsync<AppStrings>(this);
         currentUserIsAdmin = CurrentUserService.UserRole == UserRole.Admin;
 
         if (currentUserIsAdmin)
@@ -190,7 +190,6 @@ else
                 var loadedCompany = await AppCompanyService.GetCompanyByIdAsync(CompanyId.Value);
                 if (loadedCompany != null)
                 {
-                    // Map DTO to FormModel
                     companyModel.Id = loadedCompany.Id;
                     companyModel.Name = loadedCompany.Name;
                     companyModel.LegalName = loadedCompany.LegalName;
@@ -214,7 +213,7 @@ else
             }
             catch (UnauthorizedAccessException)
             {
-                NavManager.NavigateTo("/companies"); return; // Or show unauthorized message
+                NavManager.NavigateTo("/companies"); return; 
             }
             catch (Exception ex)
             {
@@ -224,6 +223,19 @@ else
         }
         
         isLoading = false;
+        await base.OnInitializedAsync();
+    }
+
+    private string GetLocalizedLegalForm(LegalForm legalForm)
+    {
+        return legalForm switch
+        {
+            LegalForm.SUARL => Strings.LegalForm_SUARL,
+            LegalForm.SARL => Strings.LegalForm_SARL,
+            LegalForm.SA => Strings.LegalForm_SA,
+            LegalForm.SNC => Strings.LegalForm_SNC,
+            _ => legalForm.ToString()
+        };
     }
 
     private async Task HandleValidSubmit()
@@ -275,19 +287,18 @@ else
         NavManager.NavigateTo("/companies");
     }
 
-    // Form Model with DataAnnotations for validation
     public class CompanyFormModel
     {
         public int Id { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "CompanyNameRequired")] 
         [MaxLength(200)]
         public string Name { get; set; } = string.Empty;
 
         [MaxLength(200)]
         public string LegalName { get; set; } = string.Empty;
 
-        [Required]
+        [Required(ErrorMessage = "TaxIdRequired")] 
         [MaxLength(50)]
         public string TaxIdentificationNumber { get; set; } = string.Empty;
 
@@ -307,11 +318,11 @@ else
         public string Country { get; set; } = "Tunisie";
 
         [MaxLength(50)]
-        [Phone]
+        [Phone(ErrorMessage = "InvalidPhoneNumber")] 
         public string PhoneNumber { get; set; } = string.Empty;
 
         [MaxLength(150)]
-        [EmailAddress]
+        [EmailAddress(ErrorMessage = "InvalidEmailFormat")] 
         public string Email { get; set; } = string.Empty;
 
         [MaxLength(50)]
@@ -319,7 +330,7 @@ else
 
         public LegalForm LegalForm { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "CreationDateRequired")] 
         public DateTime CompanyCreationDate { get; set; } = DateTime.Today;
 
         public int? AccountantId { get; set; }

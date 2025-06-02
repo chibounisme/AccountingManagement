@@ -55,6 +55,11 @@
         <None Include="Platforms\Windows\App.xaml" />
         <None Include="Platforms\Windows\App.xaml.cs" />
     </ItemGroup>
+
+    <ItemGroup>
+        <Content Remove="i18ntext\AppStrings.en.json" />
+        <Content Remove="i18ntext\AppStrings.fr.json" />
+    </ItemGroup>
     
     <ItemGroup>
       <MauiIcon Include="Resources\AppIcon\appicon.svg">
